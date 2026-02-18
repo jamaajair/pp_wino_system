@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:17
+    container_name: wino-db
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
@@ -10,6 +11,7 @@ services:
 
   backend:
     build: ./backend
+    container_name: wino-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb 
       SPRING_DATASOURCE_USERNAME: myuser                     
@@ -21,6 +23,7 @@ services:
 
   frontend:
     build: ./front_web
+    container_name: wino-frontend
     ports:
       - "3000:3000"
     depends_on:
