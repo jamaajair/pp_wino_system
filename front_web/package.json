@@ -10,11 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+     "@mui/material": "^5.14.20",
+    "@mui/icons-material": "^5.14.19",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "axios": "^1.6.2",
+    "lucide-react": "^0.408.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^6.20.0",    // Navigation entre pages
-    "axios": "^1.6.2",                // Requêtes HTTP vers le backend
-    "lucide-react": "^0.294.0"
+    "react-router-dom": "^6.20.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
