@@ -1,4 +1,4 @@
-package com.wino.demo.category.repo;
+package com.wino.demo.category.repository;
 
 import com.wino.demo.category.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;

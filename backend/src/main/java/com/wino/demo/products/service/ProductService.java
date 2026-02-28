@@ -1,7 +1,7 @@
 package com.wino.demo.products.service;
 
 import com.wino.demo.products.entity.Product;
-import com.wino.demo.products.repo.ProductRepository;
+import com.wino.demo.products.repository.ProductRepository;
 import com.wino.demo.category.service.CategoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

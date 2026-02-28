@@ -1,4 +1,4 @@
-package com.wino.demo.products.repo;
+package com.wino.demo.products.repository;
 
 import com.wino.demo.products.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

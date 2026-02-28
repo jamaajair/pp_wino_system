@@ -1,6 +1,8 @@
 package com.wino.demo.category.controller;
 import com.wino.demo.category.entity.Category;
 import com.wino.demo.category.service.CategoryService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,49 +22,34 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
     
-    /**
-     * GET /api/categories - Toutes les catégories
-     */
     @GetMapping
     public ResponseEntity<List<Category>> getAllCategories() {
+
         return ResponseEntity.ok(categoryService.getAllCategories());
+        // return ResponseEntity.ok("Hello from CategoryController! This endpoint is under construction.");
     }
     
-    /**
-     * GET /api/categories/root - Catégories racines uniquement
-     */
     @GetMapping("/root")
     public ResponseEntity<List<Category>> getRootCategories() {
         return ResponseEntity.ok(categoryService.getRootCategories());
     }
     
-    /**
-     * GET /api/categories/{id} - Une catégorie par ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<Category> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
     
-    /**
-     * GET /api/categories/{id}/subcategories - Sous-catégories
-     */
     @GetMapping("/{id}/subcategories")
     public ResponseEntity<List<Category>> getSubCategories(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getSubCategories(id));
     }
     
-    /**
-     * GET /api/categories/search?keyword=... - Recherche
-     */
     @GetMapping("/search")
     public ResponseEntity<List<Category>> searchCategories(@RequestParam String keyword) {
         return ResponseEntity.ok(categoryService.searchCategories(keyword));
     }
     
-    /**
-     * POST /api/categories - Créer une catégorie
-     */
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createCategory(@RequestBody Category category) {
         try {
@@ -80,9 +67,6 @@ public class CategoryController {
         }
     }
     
-    /**
-     * PUT /api/categories/{id} - Mettre à jour une catégorie
-     */
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateCategory(
             @PathVariable Long id, 
@@ -102,9 +86,7 @@ public class CategoryController {
         }
     }
     
-    /**
-     * DELETE /api/categories/{id} - Supprimer une catégorie
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteCategory(@PathVariable Long id) {
         try {
