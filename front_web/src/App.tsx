@@ -3,26 +3,23 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 // import Footer from './components/Footer';
 import './App.css'
+import { Box, Container } from '@mui/material';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-    <header>
+    <Box component="main" sx={{ flex: 1, py: 4}}>
       <Header />
-    </header>
-
-    <main>
-      <h1>Bienvenue sur MB Food</h1>
-      <p>Votre application de commande de repas en ligne</p>
-    </main>
-  
-    <footer>
+      
+      <Box component="main" sx={{ flex: 1, py: 4 }}>
+        
+          <h1>Bienvenue sur MB Food</h1>
+          <p>Votre application de commande de repas en ligne</p>
+        
+      </Box>
+      
       <Footer />
-    </footer>
-    </>
-  )
+    </Box>
+  );
 }
 
 export default App
