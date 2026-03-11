@@ -1,27 +1,16 @@
-// front_web/src/components/Sidebar.tsx
+// src/components/Sidebar.tsx
 
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
-import LocalDrinkIcon from '@mui/icons-material/LocalDrink';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import HomeIcon from '@mui/icons-material/Home';
-import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
-import ChairIcon from '@mui/icons-material/Chair';
-
-// Données statiques des catégories
-const categories = [
-  { id: 1, label: 'Beverages',        icon: <LocalDrinkIcon /> },
-  { id: 2, label: 'Groceries',        icon: <ShoppingBasketIcon /> },
-  { id: 3, label: 'Home',             icon: <HomeIcon /> },
-  { id: 4, label: 'Office Supplies',  icon: <BusinessCenterIcon /> },
-  { id: 5, label: 'Furniture',        icon: <ChairIcon /> },
-];
+import CategoryIcon from '@mui/icons-material/Category';
+import type { Category } from '../types/index';
 
 interface SidebarProps {
-  selectedCategory: number;
+  categories: Category[];
+  selectedCategory: number | null;
   onSelectCategory: (id: number) => void;
 }
 
-function Sidebar({ selectedCategory, onSelectCategory }: SidebarProps) {
+function Sidebar({ categories, selectedCategory, onSelectCategory }: SidebarProps) {
   return (
     <Box
       sx={{
@@ -34,7 +23,6 @@ function Sidebar({ selectedCategory, onSelectCategory }: SidebarProps) {
         alignSelf: 'flex-start',
       }}
     >
-      {/* Titre */}
       <Typography
         variant="subtitle2"
         fontWeight="bold"
@@ -43,7 +31,6 @@ function Sidebar({ selectedCategory, onSelectCategory }: SidebarProps) {
         Product Categories
       </Typography>
 
-      {/* Liste des catégories */}
       <List disablePadding>
         {categories.map((cat) => (
           <ListItemButton
@@ -59,15 +46,13 @@ function Sidebar({ selectedCategory, onSelectCategory }: SidebarProps) {
                 '& .MuiListItemIcon-root': { color: 'white' },
                 '&:hover': { backgroundColor: '#1a237e' },
               },
-              '&:hover': {
-                backgroundColor: '#e8eaf6',
-              },
+              '&:hover': { backgroundColor: '#e8eaf6' },
             }}
           >
             <ListItemIcon sx={{ minWidth: 36 }}>
-              {cat.icon}
+              <CategoryIcon />
             </ListItemIcon>
-            <ListItemText primary={cat.label} />
+            <ListItemText primary={cat.name} />
           </ListItemButton>
         ))}
       </List>

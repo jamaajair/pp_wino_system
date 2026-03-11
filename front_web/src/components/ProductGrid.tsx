@@ -2,15 +2,16 @@
 
 import { Grid, Typography, Box } from '@mui/material';
 import ProductCard from './ProductCard';
-import type { Product } from './ProductCard';
+import type { Product } from '../types';
+
 
 interface ProductGridProps {
   products: Product[];
   categoryName: string;
-  onAddToCart: (product: Product) => void;
 }
 
-function ProductGrid({ products, categoryName, onAddToCart }: ProductGridProps) {
+function ProductGrid({ products, categoryName }: ProductGridProps) {
+  {console.log('--- Rendering product in grid:', products);}
   return (
     <Box sx={{ flex: 1 }}>
 
@@ -52,7 +53,6 @@ function ProductGrid({ products, categoryName, onAddToCart }: ProductGridProps) 
             <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
               <ProductCard
                 product={product}
-                onAddToCart={onAddToCart}
               />
             </Grid>
           ))}

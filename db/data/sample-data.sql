@@ -3,37 +3,21 @@
 -- Thème : MB Food - Alimentation Générale
 -- ========================================
 
--- Nettoyage des tables (ordre inverse des dépendances)
-DELETE FROM financial_transactions;
-DELETE FROM financial_accounts;
-DELETE FROM purchase_document_lines;
-DELETE FROM purchase_documents;
-DELETE FROM sale_document_lines;
-DELETE FROM sale_documents;
-DELETE FROM payments;
-DELETE FROM customer_price_agreements;
-DELETE FROM stock_movements;
-DELETE FROM products;
-DELETE FROM categories;
-DELETE FROM suppliers;
-DELETE FROM customers;
-DELETE FROM users;
-
--- Réinitialiser les séquences
-ALTER TABLE users AUTO_INCREMENT = 1;
-ALTER TABLE categories AUTO_INCREMENT = 1;
-ALTER TABLE products AUTO_INCREMENT = 1;
-ALTER TABLE customers AUTO_INCREMENT = 1;
-ALTER TABLE suppliers AUTO_INCREMENT = 1;
-ALTER TABLE payments AUTO_INCREMENT = 1;
-ALTER TABLE stock_movements AUTO_INCREMENT = 1;
-ALTER TABLE customer_price_agreements AUTO_INCREMENT = 1;
-ALTER TABLE sale_documents AUTO_INCREMENT = 1;
-ALTER TABLE sale_document_lines AUTO_INCREMENT = 1;
-ALTER TABLE purchase_documents AUTO_INCREMENT = 1;
-ALTER TABLE purchase_document_lines AUTO_INCREMENT = 1;
-ALTER TABLE financial_accounts AUTO_INCREMENT = 1;
-ALTER TABLE financial_transactions AUTO_INCREMENT = 1;
+-- Réinitialiser les séquences (syntaxe PostgreSQL)
+TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+TRUNCATE TABLE categories RESTART IDENTITY CASCADE;
+TRUNCATE TABLE products RESTART IDENTITY CASCADE;
+TRUNCATE TABLE customers RESTART IDENTITY CASCADE;
+TRUNCATE TABLE suppliers RESTART IDENTITY CASCADE;
+TRUNCATE TABLE payments RESTART IDENTITY CASCADE;
+TRUNCATE TABLE stock_movements RESTART IDENTITY CASCADE;
+TRUNCATE TABLE customer_price_agreements RESTART IDENTITY CASCADE;
+TRUNCATE TABLE sale_documents RESTART IDENTITY CASCADE;
+TRUNCATE TABLE sale_document_lines RESTART IDENTITY CASCADE;
+TRUNCATE TABLE purchase_documents RESTART IDENTITY CASCADE;
+TRUNCATE TABLE purchase_document_lines RESTART IDENTITY CASCADE;
+TRUNCATE TABLE financial_accounts RESTART IDENTITY CASCADE;
+TRUNCATE TABLE financial_transactions RESTART IDENTITY CASCADE;
 
 -- ========================================
 -- UTILISATEURS
@@ -62,7 +46,7 @@ INSERT INTO categories (name, description, created_at, updated_at) VALUES
 -- ========================================
 
 -- Épicerie Salée
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
+INSERT INTO products (name, description, sale_price, stock, image_url, category_id, created_at, updated_at) VALUES
 ('Couscous Ferrero 1kg', 'Couscous grain moyen qualité supérieure', 2.99, 150, 'couscous-ferrero.jpg', 1, NOW(), NOW()),
 ('Harissa Cap Bon 210g', 'Pâte de piment rouge traditionnelle tunisienne', 1.89, 200, 'harissa-capbon.jpg', 1, NOW(), NOW()),
 ('Huile d''Olive Extra Vierge 1L', 'Huile d''olive première pression à froid', 7.95, 80, 'huile-olive.jpg', 1, NOW(), NOW()),
@@ -74,59 +58,65 @@ INSERT INTO products (name, description, price, stock, image_url, category_id, c
 ('Pois Chiches Goya 400g', 'Pois chiches en conserve', 1.19, 160, 'pois-chiches.jpg', 1, NOW(), NOW()),
 ('Miel d''Acacia 500g', 'Miel pur et naturel', 8.50, 60, 'miel-acacia.jpg', 1, NOW(), NOW());
 
+-- Épicerie Salée
+INSERT INTO products (code, name, description, sale_price, purchase_price, stock_quantity, active, category_id, created_at, updated_at) VALUES
+('PRD001', 'Couscous Ferrero 1kg', 'Couscous grain moyen qualité supérieure', 2.99, 2.20, 150, true, 1, NOW(), NOW()),
+('PRD002', 'Harissa Cap Bon 210g', 'Pâte de piment rouge traditionnelle tunisienne', 1.89, 1.40, 200, true, 1, NOW(), NOW()),
+('PRD003', 'Huile d''Olive Extra Vierge 1L', 'Huile d''olive première pression à froid', 7.95, 6.00, 80, true, 1, NOW(), NOW()),
+('PRD004', 'Pâtes Barilla Spaghetti 500g', 'Pâtes italiennes blé dur', 1.29, 0.95, 300, true, 1, NOW(), NOW()),
+('PRD005', 'Riz Basmati Uncle Ben''s 1kg', 'Riz long grain parfumé', 3.49, 2.60, 120, true, 1, NOW(), NOW()),
+('PRD006', 'Thon à l''Huile Mabrouka 160g', 'Thon entier à l''huile d''olive', 2.15, 1.60, 180, true, 1, NOW(), NOW()),
+('PRD007', 'Sardines à l''Huile 125g', 'Sardines portugaises de qualité', 1.65, 1.20, 220, true, 1, NOW(), NOW()),
+('PRD008', 'Concentré de Tomate 210g', 'Double concentré de tomate', 0.99, 0.70, 250, true, 1, NOW(), NOW()),
+('PRD009', 'Pois Chiches Goya 400g', 'Pois chiches en conserve', 1.19, 0.85, 160, true, 1, NOW(), NOW()),
+('PRD010', 'Miel d''Acacia 500g', 'Miel pur et naturel', 8.50, 6.00, 60, true, 1, NOW(), NOW()),
+
 -- Épicerie Sucrée
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Nutella 750g', 'Pâte à tartiner aux noisettes et cacao', 5.95, 100, 'nutella.jpg', 2, NOW(), NOW()),
-('Biscuits Prince Chocolat', 'Biscuits fourrés au chocolat', 2.49, 180, 'prince.jpg', 2, NOW(), NOW()),
-('Confiture Bonne Maman Fraise 370g', 'Confiture de fraises', 3.29, 90, 'bonne-maman.jpg', 2, NOW(), NOW()),
-('Chocolat Milka Noisettes 100g', 'Chocolat au lait et noisettes entières', 1.79, 200, 'milka.jpg', 2, NOW(), NOW()),
-('Dattes Deglet Nour 500g', 'Dattes naturelles d''Algérie', 4.50, 70, 'dattes.jpg', 2, NOW(), NOW()),
-('Halva Pistache 400g', 'Confiserie orientale au sésame et pistaches', 5.99, 50, 'halva.jpg', 2, NOW(), NOW());
+('PRD011', 'Nutella 750g', 'Pâte à tartiner aux noisettes et cacao', 5.95, 4.50, 100, true, 2, NOW(), NOW()),
+('PRD012', 'Biscuits Prince Chocolat', 'Biscuits fourrés au chocolat', 2.49, 1.80, 180, true, 2, NOW(), NOW()),
+('PRD013', 'Confiture Bonne Maman Fraise 370g', 'Confiture de fraises', 3.29, 2.40, 90, true, 2, NOW(), NOW()),
+('PRD014', 'Chocolat Milka Noisettes 100g', 'Chocolat au lait et noisettes entières', 1.79, 1.20, 200, true, 2, NOW(), NOW()),
+('PRD015', 'Dattes Deglet Nour 500g', 'Dattes naturelles d''Algérie', 4.50, 3.20, 70, true, 2, NOW(), NOW()),
+('PRD016', 'Halva Pistache 400g', 'Confiserie orientale au sésame et pistaches', 5.99, 4.20, 50, true, 2, NOW(), NOW()),
 
 -- Boissons
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Coca-Cola 1.5L', 'Boisson gazeuse', 1.89, 250, 'coca-cola.jpg', 3, NOW(), NOW()),
-('Fanta Orange 1.5L', 'Boisson gazeuse saveur orange', 1.75, 230, 'fanta.jpg', 3, NOW(), NOW()),
-('Eau Spa Reine 6x1.5L', 'Eau minérale plate pack de 6', 3.99, 100, 'spa.jpg', 3, NOW(), NOW()),
-('Jus d''Orange Tropicana 1L', 'Pur jus d''orange sans sucres ajoutés', 2.95, 140, 'tropicana.jpg', 3, NOW(), NOW()),
-('Thé Vert à la Menthe 25 sachets', 'Infusion orientale menthe et thé vert', 2.49, 120, 'the-menthe.jpg', 3, NOW(), NOW()),
-('Café Carte Noire Moulu 250g', 'Café arabica moulu', 4.25, 80, 'carte-noire.jpg', 3, NOW(), NOW());
+('PRD017', 'Coca-Cola 1.5L', 'Boisson gazeuse', 1.89, 1.45, 250, true, 3, NOW(), NOW()),
+('PRD018', 'Fanta Orange 1.5L', 'Boisson gazeuse saveur orange', 1.75, 1.30, 230, true, 3, NOW(), NOW()),
+('PRD019', 'Eau Spa Reine 6x1.5L', 'Eau minérale plate pack de 6', 3.99, 2.80, 100, true, 3, NOW(), NOW()),
+('PRD020', 'Jus d''Orange Tropicana 1L', 'Pur jus d''orange sans sucres ajoutés', 2.95, 2.10, 140, true, 3, NOW(), NOW()),
+('PRD021', 'Thé Vert à la Menthe 25 sachets', 'Infusion orientale menthe et thé vert', 2.49, 1.70, 120, true, 3, NOW(), NOW()),
+('PRD022', 'Café Carte Noire Moulu 250g', 'Café arabica moulu', 4.25, 3.00, 80, true, 3, NOW(), NOW()),
 
 -- Produits Frais
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Lait Demi-Écrémé Inex 1L', 'Lait frais belge', 1.15, 180, 'lait-inex.jpg', 4, NOW(), NOW()),
-('Yaourt Nature Danone x8', 'Yaourt nature crémeux', 2.79, 150, 'danone.jpg', 4, NOW(), NOW()),
-('Beurre Doux Président 250g', 'Beurre de baratte AOP', 2.99, 100, 'beurre-president.jpg', 4, NOW(), NOW()),
-('Fromage Gouda Tranché 200g', 'Fromage hollandais tranches', 2.49, 90, 'gouda.jpg', 4, NOW(), NOW()),
-('Œufs Frais x12', 'Œufs de poules élevées en plein air', 3.49, 120, 'oeufs.jpg', 4, NOW(), NOW());
-
--- Snacks & Apéritifs
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Chips Lay''s Paprika 200g', 'Chips saveur paprika', 2.29, 200, 'lays-paprika.jpg', 6, NOW(), NOW()),
-('Cacahuètes Grillées Salées 500g', 'Cacahuètes apéritif', 2.99, 150, 'cacahuetes.jpg', 6, NOW(), NOW()),
-('Olives Vertes Dénoyautées 370g', 'Olives vertes en saumure', 2.49, 110, 'olives.jpg', 6, NOW(), NOW()),
-('Pistaches Grillées 200g', 'Pistaches naturelles salées', 5.95, 80, 'pistaches.jpg', 6, NOW(), NOW());
-
--- Pâtisserie Orientale
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Baklava aux Amandes 500g', 'Pâtisserie feuilletée au miel et amandes', 9.99, 40, 'baklava.jpg', 7, NOW(), NOW()),
-('Makrout aux Dattes 400g', 'Gâteau semoule fourré aux dattes', 6.50, 50, 'makrout.jpg', 7, NOW(), NOW()),
-('Cornes de Gazelle 300g', 'Pâtisserie marocaine aux amandes', 7.95, 35, 'cornes-gazelle.jpg', 7, NOW(), NOW()),
-('Zlabiya au Miel 500g', 'Beignets orientaux au miel', 5.99, 45, 'zlabiya.jpg', 7, NOW(), NOW());
+('PRD023', 'Lait Demi-Écrémé Inex 1L', 'Lait frais belge', 1.15, 0.80, 180, true, 4, NOW(), NOW()),
+('PRD024', 'Yaourt Nature Danone x8', 'Yaourt nature crémeux', 2.79, 2.00, 150, true, 4, NOW(), NOW()),
+('PRD025', 'Beurre Doux Président 250g', 'Beurre de baratte AOP', 2.99, 2.20, 100, true, 4, NOW(), NOW()),
+('PRD026', 'Fromage Gouda Tranché 200g', 'Fromage hollandais tranches', 2.49, 1.80, 90, true, 4, NOW(), NOW()),
+('PRD027', 'Oeufs Frais x12', 'Oeufs de poules élevées en plein air', 3.49, 2.50, 120, true, 4, NOW(), NOW()),
 
 -- Hygiène & Entretien
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Lessive Ariel Liquide 2L', 'Lessive liquide 40 lavages', 8.95, 70, 'ariel.jpg', 5, NOW(), NOW()),
-('Papier Toilette Lotus x12', 'Papier toilette triple épaisseur', 5.49, 100, 'lotus.jpg', 5, NOW(), NOW()),
-('Liquide Vaisselle Fairy 500ml', 'Liquide vaisselle citron', 2.99, 120, 'fairy.jpg', 5, NOW(), NOW()),
-('Savon de Marseille 400g', 'Savon traditionnel multi-usages', 3.95, 80, 'savon-marseille.jpg', 5, NOW(), NOW());
+('PRD028', 'Lessive Ariel Liquide 2L', 'Lessive liquide 40 lavages', 8.95, 6.50, 70, true, 5, NOW(), NOW()),
+('PRD029', 'Papier Toilette Lotus x12', 'Papier toilette triple épaisseur', 5.49, 3.80, 100, true, 5, NOW(), NOW()),
+('PRD030', 'Liquide Vaisselle Fairy 500ml', 'Liquide vaisselle citron', 2.99, 2.10, 120, true, 5, NOW(), NOW()),
+('PRD031', 'Savon de Marseille 400g', 'Savon traditionnel multi-usages', 3.95, 2.80, 80, true, 5, NOW(), NOW()),
+
+-- Snacks & Apéritifs
+('PRD032', 'Chips Lay''s Paprika 200g', 'Chips saveur paprika', 2.29, 1.60, 200, true, 6, NOW(), NOW()),
+('PRD033', 'Cacahuètes Grillées Salées 500g', 'Cacahuètes apéritif', 2.99, 2.10, 150, true, 6, NOW(), NOW()),
+('PRD034', 'Olives Vertes Dénoyautées 370g', 'Olives vertes en saumure', 2.49, 1.70, 110, true, 6, NOW(), NOW()),
+('PRD035', 'Pistaches Grillées 200g', 'Pistaches naturelles salées', 5.95, 4.20, 80, true, 6, NOW(), NOW()),
+
+-- Pâtisserie Orientale
+('PRD036', 'Baklava aux Amandes 500g', 'Pâtisserie feuilletée au miel et amandes', 9.99, 7.50, 40, true, 7, NOW(), NOW()),
+('PRD037', 'Makrout aux Dattes 400g', 'Gâteau semoule fourré aux dattes', 6.50, 4.80, 50, true, 7, NOW(), NOW()),
+('PRD038', 'Cornes de Gazelle 300g', 'Pâtisserie marocaine aux amandes', 7.95, 5.80, 35, true, 7, NOW(), NOW()),
+('PRD039', 'Zlabiya au Miel 500g', 'Beignets orientaux au miel', 5.99, 4.20, 45, true, 7, NOW(), NOW()),
 
 -- Produits du Monde
-INSERT INTO products (name, description, price, stock, image_url, category_id, created_at, updated_at) VALUES
-('Sauce Piquante Sriracha 430g', 'Sauce pimentée asiatique', 3.49, 90, 'sriracha.jpg', 8, NOW(), NOW()),
-('Lait de Coco 400ml', 'Lait de coco cuisine asiatique', 1.99, 130, 'lait-coco.jpg', 8, NOW(), NOW()),
-('Vermicelles de Riz 400g', 'Nouilles asiatiques', 2.29, 110, 'vermicelles.jpg', 8, NOW(), NOW()),
-('Pâte de Curry Vert 50g', 'Pâte thaïlandaise épicée', 2.79, 70, 'curry-vert.jpg', 8, NOW(), NOW());
+('PRD040', 'Sauce Piquante Sriracha 430g', 'Sauce pimentée asiatique', 3.49, 2.50, 90, true, 8, NOW(), NOW()),
+('PRD041', 'Lait de Coco 400ml', 'Lait de coco cuisine asiatique', 1.99, 1.40, 130, true, 8, NOW(), NOW()),
+('PRD042', 'Vermicelles de Riz 400g', 'Nouilles asiatiques', 2.29, 1.60, 110, true, 8, NOW(), NOW()),
+('PRD043', 'Pâte de Curry Vert 50g', 'Pâte thaïlandaise épicée', 2.79, 1.90, 70, true, 8, NOW(), NOW());
 
 -- ========================================
 -- CLIENTS

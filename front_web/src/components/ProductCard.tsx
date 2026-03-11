@@ -1,20 +1,18 @@
 import { Card, CardContent, CardMedia, CardActions, Typography, Button, Box } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import type { Product } from '../types';
 
 // Interface TypeScript pour un produit
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image?: string;
-}
+
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (product: Product) => void;
 }
 
-function ProductCard({ product, onAddToCart }: ProductCardProps) {
+function ProductCard({ product }: ProductCardProps) {
+  {    console.log('Rendering ProductCard for:', product);
+
+  }
   return (
     <Card
       sx={{
@@ -54,14 +52,14 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
       )}
 
       {/* Nom et prix */}
-      <CardContent sx={{ flex: 1, pb: 0 }}>
+      {<CardContent sx={{ flex: 1, pb: 0 }}>
         <Typography variant="body1" fontWeight="500" gutterBottom>
           {product.name}
         </Typography>
         <Typography variant="body2" color="text.secondary" fontWeight="bold">
-          {product.price.toFixed(2)} €
+          {product.price} €
         </Typography>
-      </CardContent>
+      </CardContent>}
 
       {/* Bouton Add to Cart */}
       <CardActions sx={{ px: 2, pb: 2 }}>
@@ -69,7 +67,7 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
           variant="contained"
           fullWidth
           startIcon={<ShoppingCartIcon />}
-          onClick={() => onAddToCart(product)}
+          // onClick={() => onAddToCart(product)}
           sx={{
             backgroundColor: '#00838f',
             borderRadius: 1.5,
