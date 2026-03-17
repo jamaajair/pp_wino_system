@@ -5,22 +5,25 @@ import { Box, CircularProgress, Container, Typography } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import ProductGrid from '../components/ProductGrid';
 import type { Product } from '../components/ProductCard';
-import type { Category } from '../types';
+import type { CartItem, Category } from '../types';
 import { getCategories } from '../services/categoryService';
 import { getProductsByCategory } from '../services/productService';
+import CartPage from '../components/CartPage';
 
-function HomePage() {
-  // State : catégorie sélectionnée (Beverages par défaut)
+interface HomePageProps {
+  onAddToCart: (product: Product) => void;
+  view: 'shop' | 'cart';
+  cartItems: CartItem[];
+  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  setView: React.Dispatch<React.SetStateAction<'shop' | 'cart'>>;
+}
+
+function HomePage({ onAddToCart, view, cartItems, setCartItems, setView }: HomePageProps) {
   const [categories, setCategories]         = useState<Category[]>([]);
   const [products, setProducts]             = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading]               = useState<boolean>(true);
   const [error, setError]                   = useState<string | null>(null);
-
-  // Handler : ajout au panier (console.log pour l'instant)
-  const handleAddToCart = (product: Product) => {
-    console.log('Added to cart:', product);
-  };
 
   useEffect(() => {
     getCategories()
@@ -36,14 +39,9 @@ function HomePage() {
   }, []);
 
   useEffect(() => {
+    if (selectedCategory === null) return;
     getProductsByCategory(selectedCategory!)
     .then((data) => {
-      // if (data.length === 0) {
-      //   console.log('No products found for category ID:', selectedCategory);
-      // }else {
-      //   console.log('Products loaded for category ID:', selectedCategory, data);
-      // }
-      console.log('Products loaded for category ID:', data[0]);
       setProducts(data);
       setLoading(false);
     })
@@ -51,7 +49,7 @@ function HomePage() {
       setError('Failed to load products');
       setLoading(false);
     });
-  },[]);
+  },[selectedCategory]);
 
   if (loading) {
     return (
@@ -88,12 +86,28 @@ function HomePage() {
           categories={categories}
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
+          setView={setView}
         />
         {/* Zone produits droite */}
-        <ProductGrid
+        { view === 'cart' && (
+          <CartPage
+            cartItems={cartItems}
+            onBack={() => setView('shop')}
+            onCancel={() => { setCartItems([]); setView('shop'); }}
+            onValidate={() => { alert('Commande validée !');
+            setCartItems([]); setView('shop'); }}
+            />
+          )
+        }
+        { view === 'shop' && (
+          <ProductGrid
           products={products}
           categoryName={currentCategoryName}
-        />
+          onAddToCart={onAddToCart}
+          />
+      )
+        }
+        
       </Box>
     </Container>
   );

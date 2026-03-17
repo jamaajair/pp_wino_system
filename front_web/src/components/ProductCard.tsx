@@ -7,12 +7,10 @@ import type { Product } from '../types';
 
 interface ProductCardProps {
   product: Product;
+  onAddToCart: (product: Product) => void; // Handler pour ajouter au panier
 }
 
-function ProductCard({ product }: ProductCardProps) {
-  {    console.log('Rendering ProductCard for:', product);
-
-  }
+function ProductCard({ product, onAddToCart }: ProductCardProps) {
   return (
     <Card
       sx={{
@@ -57,7 +55,7 @@ function ProductCard({ product }: ProductCardProps) {
           {product.name}
         </Typography>
         <Typography variant="body2" color="text.secondary" fontWeight="bold">
-          {product.price} €
+          {product.salePrice} €
         </Typography>
       </CardContent>}
 
@@ -67,7 +65,7 @@ function ProductCard({ product }: ProductCardProps) {
           variant="contained"
           fullWidth
           startIcon={<ShoppingCartIcon />}
-          // onClick={() => onAddToCart(product)}
+          onClick={() => onAddToCart(product)}
           sx={{
             backgroundColor: '#00838f',
             borderRadius: 1.5,

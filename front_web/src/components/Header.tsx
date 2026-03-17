@@ -1,16 +1,26 @@
-// front_web/src/components/Header.tsx
-
 import { AppBar, Toolbar, Typography, IconButton, Badge, Box } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useNavigate } from 'react-router-dom';
 
-function Header() {
+interface HeaderProps {
+  count: number;
+  onLogout: () => void;
+  setView: React.Dispatch<React.SetStateAction<'shop' | 'cart'>>;
+}
+
+function Header({ count, onLogout, setView }: HeaderProps) {
+  const navigate = useNavigate();
+
   return (
     <AppBar position="static" sx={{ backgroundColor: '#1a237e' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
 
         {/* GAUCHE : Logo + Titre */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box
+          sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer' }}
+          onClick={() => navigate('/shop')}
+        >
           <Box
             sx={{
               width: 36,
@@ -37,13 +47,18 @@ function Header() {
           <IconButton color="inherit">
             <AccountCircleIcon />
           </IconButton>
-          <IconButton color="inherit">
-            <Badge badgeContent={3} color="error">
+          <IconButton color="inherit" onClick={() => setView('cart')}>
+            <Badge badgeContent={count} color="error">
               <ShoppingCartIcon />
             </Badge>
           </IconButton>
-          <Typography variant="body2" color="white" sx={{ ml: 1 }}>
-            Login / Profile
+          <Typography
+            variant="body2"
+            color="white"
+            sx={{ ml: 1, cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+            onClick={onLogout}
+          >
+            Déconnexion
           </Typography>
         </Box>
 

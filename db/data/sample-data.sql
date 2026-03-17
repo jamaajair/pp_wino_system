@@ -3,6 +3,22 @@
 -- Thème : MB Food - Alimentation Générale
 -- ========================================
 
+
+DELETE FROM users;
+
+  INSERT INTO users (username, password, email, first_name,
+  last_name, phone, role, active, created_at, updated_at) VALUES
+  ('admin',      'admin123',   'admin@mbfood.be',   'Mohammed',
+  'Benali',    '+32470123456', 'ADMIN',     true, NOW(), NOW()),
+  ('manager',    'manager123', 'manager@mbfood.be',  'Fatima',   'El
+  Amrani', '+32471234567', 'MANAGER',   true, NOW(), NOW()),
+  ('vendeur1',   'vendeur123', 'vendeur@mbfood.be',  'Hassan',
+  'Bouazza',   '+32472345678', 'SALES',     true, NOW(), NOW()),
+  ('magasinier', 'magasin123', 'stock@mbfood.be',    'Karim',
+  'Ziani',     '+32473456789', 'WAREHOUSE', true, NOW(), NOW()),
+  ('client1',    'client123',  'client@mbfood.be',   'Amina',
+  'Boutari',   '+32470000001', 'CUSTOMER',  true, NOW(), NOW());
+  
 -- Réinitialiser les séquences (syntaxe PostgreSQL)
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
 TRUNCATE TABLE categories RESTART IDENTITY CASCADE;
@@ -23,10 +39,11 @@ TRUNCATE TABLE financial_transactions RESTART IDENTITY CASCADE;
 -- UTILISATEURS
 -- ========================================
 INSERT INTO users (username, password, email, first_name, last_name, phone, role, active, created_at, updated_at) VALUES
-('admin', '$2a$10$abcdefghijklmnopqrstuvwxyz', 'admin@mbfood.be', 'Mohammed', 'Benali', '+32470123456', 'ADMIN', true, NOW(), NOW()),
-('manager', '$2a$10$abcdefghijklmnopqrstuvwxyz', 'manager@mbfood.be', 'Fatima', 'El Amrani', '+32471234567', 'MANAGER', true, NOW(), NOW()),
-('vendeur1', '$2a$10$abcdefghijklmnopqrstuvwxyz', 'vendeur@mbfood.be', 'Hassan', 'Bouazza', '+32472345678', 'SALES', true, NOW(), NOW()),
-('magasinier', '$2a$10$abcdefghijklmnopqrstuvwxyz', 'stock@mbfood.be', 'Karim', 'Ziani', '+32473456789', 'WAREHOUSE', true, NOW(), NOW());
+('admin', 'admin123', 'admin@mbfood.be', 'Mohammed', 'Benali', '+32470123456', 'ADMIN', true, NOW(), NOW()),
+('manager', 'manager123', 'manager@mbfood.be', 'Fatima', 'El Amrani', '+32471234567', 'MANAGER', true, NOW(), NOW()),
+('vendeur1', 'vendeur123', 'vendeur@mbfood.be', 'Hassan', 'Bouazza', '+32472345678', 'SALES', true, NOW(), NOW()),
+('magasinier', 'magasin123', 'stock@mbfood.be', 'Karim', 'Ziani', '+32473456789', 'WAREHOUSE', true, NOW(), NOW()),
+('client1', 'client123', 'client@mbfood.be', 'Amina', 'Boutari', '+32470000001', 'CUSTOMER', true, NOW(), NOW());
 
 -- ========================================
 -- CATÉGORIES DE PRODUITS

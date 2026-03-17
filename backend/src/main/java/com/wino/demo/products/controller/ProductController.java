@@ -25,7 +25,12 @@ public class ProductController {
      * GET /api/products - Tous les produits
      */
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<Product>> getAllProducts(
+            @RequestParam(required = false) Long categoryId) {
+        
+        if (categoryId != null) {
+            return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
+        }
         return ResponseEntity.ok(productService.getAllProducts());
     }
     

@@ -8,9 +8,10 @@ interface SidebarProps {
   categories: Category[];
   selectedCategory: number | null;
   onSelectCategory: (id: number) => void;
+  setView: React.Dispatch<React.SetStateAction<'shop' | 'cart'>>;
 }
 
-function Sidebar({ categories, selectedCategory, onSelectCategory }: SidebarProps) {
+function Sidebar({ categories, selectedCategory, onSelectCategory, setView }: SidebarProps) {
   return (
     <Box
       sx={{
@@ -36,7 +37,7 @@ function Sidebar({ categories, selectedCategory, onSelectCategory }: SidebarProp
           <ListItemButton
             key={cat.id}
             selected={selectedCategory === cat.id}
-            onClick={() => onSelectCategory(cat.id)}
+            onClick={() => {onSelectCategory(cat.id); setView('shop');}}
             sx={{
               borderRadius: 2,
               mb: 0.5,

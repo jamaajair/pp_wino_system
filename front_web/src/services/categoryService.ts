@@ -1,9 +1,7 @@
-import axios from 'axios';
-import type { Category } from '../types/index';
-
-const API_BASE_URL = 'http://localhost:8080';
+import api from "../api/axios";
+import type { Category } from "../types/index";
 
 export const getCategories = async (): Promise<Category[]> => {
-  const response = await axios.get<Category[]>(`${API_BASE_URL}/api/categories`);
+  const response = await api.get<Category[]>(`/api/categories`);
   return response.data;
 };
