@@ -12,6 +12,7 @@ interface AgentHeaderProps {
   username: string;
   onLogout: () => void;
   onAction?: (action: string) => void;
+  setCurrentTask?: (task: string | null) => void;
 }
 
 function getHeaderButtons(section: SectionKey | null, onAction?: (action: string) => void): ActionButton[] {
@@ -48,7 +49,7 @@ function getHeaderButtons(section: SectionKey | null, onAction?: (action: string
   return config[section] ?? [];
 }
 
-function AgentHeader({ activeSection, username, onLogout, onAction }: AgentHeaderProps) {
+function AgentHeader({ activeSection, username, onLogout, onAction, setCurrentTask }: AgentHeaderProps) {
   const buttons = getHeaderButtons(activeSection, onAction);
 
   const sectionLabels: Record<SectionKey, string> = {
@@ -60,6 +61,10 @@ function AgentHeader({ activeSection, username, onLogout, onAction }: AgentHeade
     stock:        'Stock',
     finances:     'Finances',
   };
+
+  // const HandleClickButton(btn){
+  //   btn.onClick();
+  // };
 
   return (
     <AppBar
@@ -89,7 +94,11 @@ function AgentHeader({ activeSection, username, onLogout, onAction }: AgentHeade
               key={btn.label}
               variant="contained"
               size="small"
-              onClick={btn.onClick}
+              onClick={
+                // HandleClickButton(btn);
+                () => {
+                btn.onClick();
+              }}
               sx={{
                 backgroundColor: '#1a237e',
                 textTransform: 'none',

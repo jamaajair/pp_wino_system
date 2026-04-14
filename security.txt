@@ -1,0 +1,147 @@
+==============================================================
+  SECURITE — FONCTIONNEMENT DU PROTOCOLE (Spring Boot + React)
+==============================================================
+
+
+1. LOGIN — OBTENIR UN TOKEN
+─────────────────────────────────────────────────────────────
+
+Browser                    Backend
+  |                           |
+  |  POST /api/auth/login     |
+  |  { username, password }   |
+  | ─────────────────────── → |
+  |                           |  Vérifie en base de données
+  |                           |  Génère un JWT signé
+  |                           |
+  |  { token: "eyJ..." }      |
+  | ← ─────────────────────── |
+  |                           |
+  Stocke dans localStorage
+  ("wino-token" et "wino-user")
+
+
+2. STRUCTURE D'UN JWT
+─────────────────────────────────────────────────────────────
+
+Le token "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbGljZSJ9.xxx"
+est 3 parties en base64 séparées par des points :
+
+  HEADER          PAYLOAD              SIGNATURE
+  eyJ...    .     eyJzdWIi...    .     abc123...
+  algorithme      données               preuve que c'est signé
+                  { sub: "alice",       par le serveur
+                    role: "SALES",
+                    exp: 1234567890 }
+
+Le serveur signe avec une clé secrète (jwt.secret dans application.properties).
+Personne ne peut falsifier le token sans cette clé.
+
+
+3. REQUETE AUTHENTIFIEE
+─────────────────────────────────────────────────────────────
+
+Browser                         Filtres Spring Boot              Controller
+  |                                    |                              |
+  |  GET /api/products/search          |                              |
+  |  Authorization: Bearer eyJ...      |                              |
+  | ────────────────────────────────→  |                              |
+  |                            CorsHandlerFilter                      |
+  |                            (ajoute headers CORS, laisse passer)   |
+  |                                    |                              |
+  |                            JwtFilter                              |
+  |                            1. Lit le header Authorization         |
+  |                            2. Extrait le token                    |
+  |                            3. Vérifie la signature + expiration   |
+  |                            4. Extrait username + role             |
+  |                            5. Met l'auth dans SecurityContext     |
+  |                                    |                              |
+  |                            Spring Security                        |
+  |                            "L'utilisateur est authentifié ?"      |
+  |                            → Oui (SecurityContext rempli)         |
+  |                                    |                              |
+  |                                    | ───────────────────────────→ |
+  |                                    |                   traite la requête
+  |  réponse JSON                      |                              |
+  | ←──────────────────────────────────|──────────────────────────────|
+
+
+4. REQUETE SANS TOKEN (ou token invalide)
+─────────────────────────────────────────────────────────────
+
+JwtFilter → pas de header Authorization → ne remplit pas le SecurityContext
+                                                     ↓
+Spring Security → "anyRequest().authenticated()" → SecurityContext vide → 401 Unauthorized
+
+
+5. SCHEMA GLOBAL — ORDRE DES FILTRES
+─────────────────────────────────────────────────────────────
+
+Requête HTTP
+     ↓
+┌─────────────────────────────────────┐
+│  CorsHandlerFilter (ordre -∞)        │  ← OPTIONS → 200 stop
+│                                     │  ← autres  → ajoute headers, continue
+└─────────────────────────────────────┘
+     ↓
+┌─────────────────────────────────────┐
+│  Spring Security Filter Chain       │
+│  ┌───────────────────────────────┐  │
+│  │ JwtFilter                     │  │  ← lit le token, identifie l'user
+│  └───────────────────────────────┘  │
+│  ┌───────────────────────────────┐  │
+│  │ Authorization check           │  │  ← /api/auth/** → libre
+│  │                               │  │  ← tout le reste → doit être auth
+│  └───────────────────────────────┘  │
+└─────────────────────────────────────┘
+     ↓
+Controller (ProductController, CustomerController...)
+
+
+6. POURQUOI PAS DE SESSION ?
+─────────────────────────────────────────────────────────────
+
+Classiquement les sites gardent un cookie de session côté serveur.
+Ici on est STATELESS — le serveur ne garde rien en mémoire.
+Chaque requête porte toutes les infos dans le JWT (qui tu es, ton rôle,
+quand ça expire). Le serveur vérifie juste la signature mathématique.
+
+
+7. CORS — POURQUOI C'EST NECESSAIRE
+─────────────────────────────────────────────────────────────
+
+Le browser est sur http://localhost:3000 (React).
+Il fait une requête vers http://localhost:8080 (Spring).
+Le browser voit que c'est une origine différente (port différent)
+et bloque par défaut.
+
+Sans header Authorization → requête "simple" → pas de preflight → OK
+Avec header Authorization → requête "complexe" → preflight obligatoire
+
+Le Preflight (requête OPTIONS automatique du browser) :
+
+  Browser → Backend :  "J'ai l'intention d'envoyer un GET avec Authorization, t'es ok ?"
+  Backend → Browser :  "Oui, voici ce que j'autorise" (headers Access-Control-Allow-*)
+  Browser → Backend :  OK, j'envoie la vraie requête.
+
+Sans CorsHandlerFilter : Spring Security interceptait OPTIONS → 403
+                         → browser bloquait tout → CORS error
+
+Avec CorsHandlerFilter (ordre HIGHEST_PRECEDENCE) :
+  OPTIONS → CorsHandlerFilter → 200 + headers CORS → Spring Security ne voit jamais le preflight
+
+
+8. FICHIERS CLES
+─────────────────────────────────────────────────────────────
+
+Backend :
+  - SecurityConfig.java       : configuration Spring Security (stateless, JWT, règles d'accès)
+  - JwtFilter.java            : extrait et valide le token à chaque requête
+  - JwtService.java           : génère et parse les tokens JWT
+  - AuthController.java       : endpoint POST /api/auth/login
+  - CorsHandlerFilter.java    : gère le CORS avant Spring Security
+
+Frontend :
+  - api/axios.ts              : intercepteur qui ajoute Authorization: Bearer <token>
+  - services/authService.ts   : login(), logout(), getStoredUser()
+  - App.tsx                   : useState(() => getStoredUser()) pour persister la session au refresh

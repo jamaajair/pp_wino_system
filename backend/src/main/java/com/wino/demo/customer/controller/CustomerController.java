@@ -31,6 +31,11 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getAllCustomers());
     }
     
+    @GetMapping("/value")
+    public ResponseEntity<List<Customer>> searchCustomer(@RequestParam String keyword) {
+        return ResponseEntity.ok(customerService.searchCustomers(keyword));
+    }
+    
     /**
      * GET /api/customers/active - Clients actifs
      */

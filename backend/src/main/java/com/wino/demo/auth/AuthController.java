@@ -1,5 +1,6 @@
 package com.wino.demo.auth;
 
+import com.wino.demo.auth.JwtService;
 import com.wino.demo.user.entity.User;
 import com.wino.demo.user.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -10,12 +11,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
+    private final JwtService jwtService;
     private final UserRepository userRepository;
 
-    public AuthController(UserRepository userRepository) {
+    public AuthController(JwtService jwtService, UserRepository userRepository) {
+        this.jwtService = jwtService;
         this.userRepository = userRepository;
     }
 
@@ -34,7 +36,8 @@ public class AuthController {
         return ResponseEntity.ok(Map.of(
             "id", user.getId(),
             "username", user.getUsername(),
-            "role", user.getRole().name()
+            "role", user.getRole().name(),
+            "token", jwtService.generateToken(user)
         ));
     }
 }

@@ -7,7 +7,7 @@ import ProductGrid from '../components/ProductGrid';
 import type { Product } from '../components/ProductCard';
 import type { CartItem, Category } from '../types';
 import { getCategories } from '../services/categoryService';
-import { getProductsByCategory } from '../services/productService';
+import { productService } from '../services/productService';
 import CartPage from '../components/CartPage';
 
 interface HomePageProps {
@@ -40,7 +40,7 @@ function HomePage({ onAddToCart, view, cartItems, setCartItems, setView }: HomeP
 
   useEffect(() => {
     if (selectedCategory === null) return;
-    getProductsByCategory(selectedCategory!)
+    productService.getProductsByCategory(selectedCategory!)
     .then((data) => {
       setProducts(data);
       setLoading(false);

@@ -41,6 +41,12 @@ public class Product {
     
     @Column(name = "min_stock_level")
     private Integer minStockLevel;
+
+    @Column(name = "tva")
+    private Integer tva;
+
+    @Column(name = "qte_colis")
+    private Integer qteColis;
     
     @Column(name = "max_stock_level")
     private Integer maxStockLevel;
