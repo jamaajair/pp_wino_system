@@ -46,8 +46,9 @@ public class SaleDocument {
     @Column(columnDefinition = "TEXT")
     private String notes;
     
-    @Column(length = 100)
-    private String status; // DRAFT, SENT, PAID, CANCELLED
+    @Column(nullable = false, length = 30)
+    @Enumerated(EnumType.STRING)
+    private SaleDocumentStatus status;
     
     @OneToMany(mappedBy = "saleDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -58,6 +59,9 @@ public class SaleDocument {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "converted_from_document_number")
+    private String convertedFromDocumentNumber;
     
     @PrePersist
     protected void onCreate() {
@@ -67,7 +71,7 @@ public class SaleDocument {
             documentDate = LocalDate.now();
         }
         if (status == null) {
-            status = "DRAFT";
+            status = SaleDocumentStatus.DRAFT;
         }
     }
     
@@ -106,15 +110,21 @@ public class SaleDocument {
      * Par exemple: QUOTE -> ORDER -> DELIVERY_NOTE -> INVOICE
      */
     public SaleDocument convertTo(SaleDocumentType newType) {
-        // Créer un nouveau document
+        if (!canConvertTo(newType)) {
+            throw new IllegalStateException("Conversion " + this.type + " vers " + newType + " interdite");
+        }
+
         SaleDocument newDocument = new SaleDocument();
         newDocument.setType(newType);
+        if (this.convertedFromDocumentNumber != null) {
+            newDocument.setConvertedFromDocumentNumber(this.documentNumber);
+        }
         newDocument.setCustomer(this.customer);
         newDocument.setDocumentDate(LocalDate.now());
+        newDocument.setDueDate(LocalDate.now().plusDays(30));
         newDocument.setNotes(this.notes);
-        newDocument.setStatus("DRAFT");
-        
-        // Copier les lignes
+        newDocument.setStatus(getNewStatusAfterConversion(newType));
+
         for (SaleDocumentLine line : this.lines) {
             SaleDocumentLine newLine = new SaleDocumentLine();
             newLine.setProduct(line.getProduct());
@@ -124,31 +134,28 @@ public class SaleDocument {
             newLine.calculateLineTotal();
             newDocument.addLine(newLine);
         }
-        
+
         newDocument.calculateTotalAmount();
-        
         return newDocument;
     }
-    
-    /**
-     * Envoyer le document par email
-     */
-    public boolean sendByEmail() {
-        // Pour l'instant, simulation de l'envoi
-        // Dans une vraie application, on utiliserait JavaMailSender
-        
-        if (customer == null || customer.getEmail() == null || customer.getEmail().isEmpty()) {
-            throw new RuntimeException("Le client n'a pas d'adresse email");
-        }
-        
-        // Simuler l'envoi
-        System.out.println("Envoi du document " + documentNumber + " à " + customer.getEmail());
-        
-        // Marquer le document comme envoyé
-        if ("DRAFT".equals(this.status)) {
-            this.status = "SENT";
-        }
-        
-        return true;
+
+    public boolean canConvertTo(SaleDocumentType newType) {
+        return switch (this.type) {
+            case QUOTE -> newType == SaleDocumentType.ORDER
+                    || newType == SaleDocumentType.DELIVERY_NOTE
+                    || newType == SaleDocumentType.INVOICE;
+            case ORDER -> newType == SaleDocumentType.DELIVERY_NOTE
+                    || newType == SaleDocumentType.INVOICE;
+            case DELIVERY_NOTE -> newType == SaleDocumentType.INVOICE;
+            case INVOICE -> false;
+        };
+    }
+
+    public static SaleDocumentStatus getNewStatusAfterConversion(SaleDocumentType newType) {
+        return switch (newType) {
+            case ORDER -> SaleDocumentStatus.CONFIRMED;
+            case DELIVERY_NOTE -> SaleDocumentStatus.IN_PREPARATION;
+            case QUOTE, INVOICE -> SaleDocumentStatus.DRAFT;
+        };
     }
 }

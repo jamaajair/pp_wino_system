@@ -1,5 +1,5 @@
 import api from "../api/axios";
-import type { Product } from "../types/index";
+import type { Product, SaleDocumentRequest } from "../types/index";
 
 
 export const productService = {
@@ -17,4 +17,9 @@ export const productService = {
     const response = await api.get<Product[]>(`/api/products/search`, { params: { keyword: query } });
     return response.data;
   },
+
+  createSaleDocument: async (request: SaleDocumentRequest): Promise<void> => {
+    const answer = await api.post('/api/sale-documents', request);
+    return answer.data;
+  }
 };

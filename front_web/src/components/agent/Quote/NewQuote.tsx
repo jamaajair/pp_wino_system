@@ -1,9 +1,10 @@
-import { Box, Fade } from '@mui/material';
+import { Box, Fade, Alert, Snackbar} from '@mui/material';
 import { useState } from 'react';
 import type { Customer, Product } from '../../../types';
 import QuoteHeader from './QuoteHeader';
 import QuoteLines from './QuoteLines';
 import QuoteSummary from './QuoteSummary';
+import { productService } from '../../../services/productService';
 
 export interface QuoteItem {
   product: Product;
@@ -21,6 +22,9 @@ function NewQuote({currentTask, setCurrentTask, onClose: _onClose }: NewQuotePro
   const [quoteNumber] = useState('DEV-001');
   const [items, setItems] = useState<QuoteItem[]>([]);
   const [isVisible, setIsVisible] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isValid, setIsValid] = useState(false);
+
 
   const handleCancel = () => setIsVisible(false);
 
@@ -41,12 +45,41 @@ function NewQuote({currentTask, setCurrentTask, onClose: _onClose }: NewQuotePro
     setItems(prev => prev.map(i => i.product.id === productId ? { ...i, qty } : i));
   };
 
+  const onValidQuote = async () => {
+    if(!customer){
+      setError('Veuillez sélectionner un client avant de valider le devis.');
+      return;
+    }
+
+    if(items.length === 0){
+      setError('Veuillez ajouter au moins un produit au devis.');
+      return;
+    }
+    setError(null);
+    try {
+      const payload = {
+        type: 'QUOTE' as const,
+        customerId: customer?.id ?? 0,
+        lines: items.map(i => ({
+          productId: i.product.id,
+          quantity: i.qty,
+        }))
+      };
+      const doc = await productService.createSaleDocument(payload);
+      setIsValid(true);
+      console.log('Document créé :', doc);
+    } catch (error) {
+      console.error('Erreur création quote', error);
+    }
+  };
+
   return (
-    currentTask && (
+    <>
+    {currentTask && !isValid && (
       <Fade in={isVisible} timeout={600} onExited={() => setCurrentTask(null)} >
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f7f8fc' }}>
           <Box sx={{ position: 'sticky', top: 0, zIndex: 10, p: 2, backgroundColor: '#f7f8fc' }}>
-            <QuoteHeader onCancel={handleCancel} quoteNumber={quoteNumber} customer={customer} setCustomer={setCustomer} addProduct={addProduct} />
+            <QuoteHeader onCancel={handleCancel} quoteNumber={quoteNumber} customer={customer} setCustomer={setCustomer} addProduct={addProduct} onValidQuote={onValidQuote} errorVal={error} setErrorVal={setError}/>
           </Box>
 
           <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
@@ -58,7 +91,20 @@ function NewQuote({currentTask, setCurrentTask, onClose: _onClose }: NewQuotePro
           </Box>
         </Box>
       </Fade>
-    )
+    )}
+    {isValid && (
+      <Snackbar
+        open={isValid}
+        autoHideDuration={3500}
+        onClose={() => setIsValid(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity="success" onClose={() => setIsValid(false)}>
+          Le devis a été créé avec succès.
+        </Alert>
+      </Snackbar>
+    )}
+    </>
   );
 }
 

@@ -9,13 +9,15 @@ import {
   Paper,
   TextField,
   Typography,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
-import type { Customer, Product } from '../../../types';
+import type { Customer, Product, SaleDocumentRequest } from '../../../types';
 import { customerService } from '../../../services/customerService';
 import { productService } from '../../../services/productService';
 
@@ -25,10 +27,12 @@ interface QuoteHeaderProps {
   customer: Customer | null;
   setCustomer: (value: Customer | null) => void;
   addProduct: (value: Product) => void;
-  
+  onValidQuote : () => void;
+  errorVal : string | null;
+  setErrorVal : (value: string | null) => void;
 }
 
-function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct }: QuoteHeaderProps) {
+function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, onValidQuote, errorVal, setErrorVal }: QuoteHeaderProps) {
   const [optionsCustomer, setOptionsCustomer] = useState<Customer[]>([]);
   const [optionsProduct, setOptionsProduct] = useState<Product[]>([]);
   const [productInputKey, setProductInputKey] = useState(0);
@@ -50,7 +54,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct }
   }
 
   const handleValiderDevis = () => {
-    console.log("Valider")
+    onValidQuote();
   }
 
   const handleInputChangeProduct = async (_: unknown, value: string) => {
@@ -238,6 +242,19 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct }
             )}
           />
         </Box>
+
+        {errorVal && (
+          <Snackbar
+            open={errorVal !== null}
+            autoHideDuration={3500}
+            onClose={() => setErrorVal(null)}
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          >
+            <Alert severity="error" onClose={() => setErrorVal(null)}>
+              {errorVal}
+            </Alert>
+          </Snackbar>
+        )}
 
         <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'flex-end', gap: 1.2, px: 2 }}>
           <Button
