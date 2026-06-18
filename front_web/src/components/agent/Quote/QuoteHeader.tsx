@@ -68,7 +68,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
     }
   };
 
-  return (
+  return (    
     <Box sx={{ position: 'relative' }}>
       <Box
         sx={{
@@ -84,7 +84,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-          <DescriptionOutlinedIcon />
+          {/*<DescriptionOutlinedIcon />*/}
           <Typography sx={{ fontWeight: 800, letterSpacing: 0.8 }}>
             CREATION DEVIS
           </Typography>
@@ -103,7 +103,6 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
           }}
         />
       </Box>
-
       <Paper
         elevation={0}
         sx={{
@@ -130,7 +129,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <EditOutlinedIcon fontSize="small" />
+                  {/*<EditOutlinedIcon fontSize="small" />*/}
                 </InputAdornment>
               ),
               readOnly: true,
@@ -159,7 +158,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
                   startAdornment: (
                     <>
                       <InputAdornment position="start">
-                        <PersonOutlineRoundedIcon fontSize="small" />
+                        {/*<PersonOutlineRoundedIcon fontSize="small" />*/}
                       </InputAdornment>
                       {params.InputProps.startAdornment}
                     </>
@@ -192,7 +191,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <CalendarMonthOutlinedIcon fontSize="small" />
+                  {/*<CalendarMonthOutlinedIcon fontSize="small" />*/}
                 </InputAdornment>
               ),
               readOnly: true,
@@ -225,7 +224,7 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
                   startAdornment: (
                     <>
                       <InputAdornment position="start">
-                        <PersonOutlineRoundedIcon fontSize="small" />
+                        {/*<PersonOutlineRoundedIcon fontSize="small" />*/}
                       </InputAdornment>
                       {params.InputProps.startAdornment}
                     </>

@@ -5,7 +5,7 @@ import {
   IconButton, Tooltip, Drawer, Divider,
   Button,  Menu, MenuItem
 } from '@mui/material';
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { KeyboardArrowUp } from "@mui/icons-material";
 import { Eye, X } from 'lucide-react';
 import type { SaleDocumentResponse, DocumentType } from '../../../types';
 import { saleDocumentService } from '../../../services/saleDocumentService';
@@ -145,14 +145,14 @@ function ListeVentes() {
                   <TableCell>{doc.dueDate ?? '—'}</TableCell>
                   <TableCell>
                     <Chip
-                      // label={STATUS_LABELS[doc.status?.toString()] ?? doc.status?.toString()}
-                      // color={STATUS_COLORS[doc.status] ?? 'default'}
+                      label={doc.status ? STATUS_LABELS[doc.status] : "—"}
+                      color={doc.status ? STATUS_COLORS[doc.status] : "default"}
                       size="small"
                     />
                   </TableCell>
                   <TableCell align="center">
                     <Tooltip title="Voir le détail">
-                      <IconButton size="small" onClick={() => setSelectedDoc(doc)}>
+                      <IconButton size="small" onClick={() => {setSelectedDoc(doc); console.log('Document sélectionné :', doc);}}>
                         <Eye size={16} />
                       </IconButton>
                     </Tooltip>
@@ -192,8 +192,8 @@ function ListeVentes() {
                 size="small"
               />
               <Chip
-                // label={STATUS_LABELS[selectedDoc.status] ?? selectedDoc.status}
-                // color={STATUS_COLORS[selectedDoc.status] ?? 'default'}
+                label={selectedDoc.status ? STATUS_LABELS[selectedDoc.status] : "—"}
+                color={selectedDoc.status ? STATUS_COLORS[selectedDoc.status] : "default"}
                 size="small"
               />
               {selectedDoc.convertedFromDocumentNumber && (
@@ -210,7 +210,8 @@ function ListeVentes() {
                     size="small"
                     color="primary"
                     onClick={handleOpen}
-                    endIcon={<KeyboardArrowUpIcon />}
+                    endIcon={<KeyboardArrowUp />}
+                    
                   >
                     Convertir
                   </Button>
@@ -232,6 +233,7 @@ function ListeVentes() {
                       En Facture
                     </MenuItem>
                   </Menu>
+                  
                 </Box>
               )}
               {

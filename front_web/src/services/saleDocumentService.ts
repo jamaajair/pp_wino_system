@@ -4,6 +4,7 @@ import type { SaleDocumentResponse, SaleDocumentRequest } from '../types';
 export const saleDocumentService = {
   getAll: async (): Promise<SaleDocumentResponse[]> => {
     const response = await api.get<SaleDocumentResponse[]>('/api/sale-documents');
+    console.log('response', response.data);
     return response.data;
   },
 

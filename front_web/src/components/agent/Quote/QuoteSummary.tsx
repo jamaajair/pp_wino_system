@@ -31,7 +31,7 @@ function QuoteSummary({ items }: QuoteSummaryProps) {
                     backgroundColor: "info.50",
                     display: "flex", alignItems: "center", justifyContent: "center"
                 }}>
-                    <ShoppingBagOutlinedIcon sx={{ fontSize: 16, color: "info.main" }} />
+                    {/*<ShoppingBagOutlinedIcon sx={{ fontSize: 16, color: "info.main" }} />*/}
                 </Box>
                 <Box>
                     <Typography variant="body1" fontWeight={500}>{nmbr_colis} articles</Typography>

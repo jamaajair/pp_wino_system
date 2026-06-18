@@ -70,7 +70,7 @@ export interface SaleDocumentLineResponse {
 
 export type SaleDocumentStatus =                                                                                                                                                                          
     | 'DRAFT' | 'SENT' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED'
-    | 'CONFIRMED' | 'CANCELLED'                                                                                                                                                                        
+    | 'CONFIRMED' | 'CANCELLED'  | 'FINALIZED'                                                                                                                                                                        
     | 'IN_PREPARATION' | 'SHIPPED' | 'DELIVERED'                                                                                                                                                       
     | 'PAID' | 'PARTIALLY_PAID' | 'OVERDUE' | 'REFUNDED';  
 

@@ -78,21 +78,23 @@ function NewQuote({currentTask, setCurrentTask, onClose: _onClose }: NewQuotePro
     {currentTask && !isValid && (
       <Fade in={isVisible} timeout={600} onExited={() => setCurrentTask(null)} >
         <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#f7f8fc' }}>
-          <Box sx={{ position: 'sticky', top: 0, zIndex: 10, p: 2, backgroundColor: '#f7f8fc' }}>
-            <QuoteHeader onCancel={handleCancel} quoteNumber={quoteNumber} customer={customer} setCustomer={setCustomer} addProduct={addProduct} onValidQuote={onValidQuote} errorVal={error} setErrorVal={setError}/>
-          </Box>
-
+          {
+            <Box sx={{ position: 'sticky', top: 0, zIndex: 10, p: 2, backgroundColor: '#f7f8fc' }}>
+              <QuoteHeader onCancel={handleCancel} quoteNumber={quoteNumber} customer={customer} setCustomer={setCustomer} addProduct={addProduct} onValidQuote={onValidQuote} errorVal={error} setErrorVal={setError}/>
+            </Box>
+          }
+          
           <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
             <QuoteLines items={items} onRemove={removeItem} onUpdateQty={updateQty} />
           </Box>
-
+          
           <Box sx={{ position: 'sticky', bottom: 0, zIndex: 10, p: 2, backgroundColor: '#f7f8fc' }}>
             <QuoteSummary items={items} />
           </Box>
         </Box>
       </Fade>
     )}
-    {isValid && (
+    {/*{isValid && (
       <Snackbar
         open={isValid}
         autoHideDuration={3500}
@@ -103,7 +105,7 @@ function NewQuote({currentTask, setCurrentTask, onClose: _onClose }: NewQuotePro
           Le devis a été créé avec succès.
         </Alert>
       </Snackbar>
-    )}
+    )}*/}
     </>
   );
 }
