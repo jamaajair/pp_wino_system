@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.beans.ConstructorProperties;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -62,7 +64,27 @@ public class SaleDocument {
 
     @Column(name = "converted_from_document_number")
     private String convertedFromDocumentNumber;
+
+    @Column(name = "converted_quote_to_order")
+    private Boolean convertedQuoteToOrder = false;
     
+    @Column(name = "converted_quote_to_delivery_note")
+    private Boolean convertedQuoteToDeliveryNote = false;
+
+    @Column(name = "converted_quote_to_invoice")
+    private Boolean convertedQuoteToInvoice = false;
+
+
+    @Column(name = "converted_order_to_delivery_note")
+    private Boolean convertedOrderToDeliveryNote = false;
+
+    @Column(name = "converted_order_to_invoice")
+    private Boolean convertedOrderToInvoice = false;
+
+    @Column(name = "converted_delivery_note_to_invoice")
+    private Boolean convertedDeliveryNoteToInvoice = false;
+
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -109,11 +131,12 @@ public class SaleDocument {
      * Convertir le document en un autre type
      * Par exemple: QUOTE -> ORDER -> DELIVERY_NOTE -> INVOICE
      */
-    public SaleDocument convertTo(SaleDocumentType newType) {
-        if (!canConvertTo(newType)) {
+    public SaleDocument convertTo(SaleDocument original, SaleDocumentType newType) {
+        if (!canConvertTo(original, newType)) {
             throw new IllegalStateException("Conversion " + this.type + " vers " + newType + " interdite");
         }
 
+        setConvertedFlag(newType);
         SaleDocument newDocument = new SaleDocument();
         newDocument.setType(newType);
         if (this.convertedFromDocumentNumber != null) {
@@ -139,16 +162,34 @@ public class SaleDocument {
         return newDocument;
     }
 
-    public boolean canConvertTo(SaleDocumentType newType) {
+    public boolean canConvertTo(SaleDocument original, SaleDocumentType newType) {
         return switch (this.type) {
-            case QUOTE -> newType == SaleDocumentType.ORDER
-                    || newType == SaleDocumentType.DELIVERY_NOTE
-                    || newType == SaleDocumentType.INVOICE;
-            case ORDER -> newType == SaleDocumentType.DELIVERY_NOTE
-                    || newType == SaleDocumentType.INVOICE;
-            case DELIVERY_NOTE -> newType == SaleDocumentType.INVOICE;
+            case QUOTE -> (newType == SaleDocumentType.ORDER && !original.convertedQuoteToOrder)
+                    || (newType == SaleDocumentType.DELIVERY_NOTE && !original.convertedQuoteToDeliveryNote)
+                    || (newType == SaleDocumentType.INVOICE && !original.convertedQuoteToInvoice);
+            case ORDER -> (newType == SaleDocumentType.DELIVERY_NOTE && !original.convertedOrderToDeliveryNote)
+                    || (newType == SaleDocumentType.INVOICE && !original.convertedOrderToInvoice);
+            case DELIVERY_NOTE -> (newType == SaleDocumentType.INVOICE && !original.convertedDeliveryNoteToInvoice);
             case INVOICE -> false;
         };
+    }
+
+    public void setConvertedFlag(SaleDocumentType newType) {
+        switch (this.type) {
+            case QUOTE -> {
+                if (newType == SaleDocumentType.ORDER) convertedQuoteToOrder = true;
+                else if (newType == SaleDocumentType.DELIVERY_NOTE) convertedQuoteToDeliveryNote = true;
+                else if (newType == SaleDocumentType.INVOICE) convertedQuoteToInvoice = true;
+            }
+            case ORDER -> {
+                if (newType == SaleDocumentType.DELIVERY_NOTE) convertedOrderToDeliveryNote = true;
+                else if (newType == SaleDocumentType.INVOICE) convertedOrderToInvoice = true;
+            }
+            case DELIVERY_NOTE -> {
+                if (newType == SaleDocumentType.INVOICE) convertedDeliveryNoteToInvoice = true;
+            }
+            case INVOICE -> { }
+        }
     }
 
     public static SaleDocumentStatus getNewStatusAfterConversion(SaleDocumentType newType) {

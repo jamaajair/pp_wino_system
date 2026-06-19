@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,12 +42,23 @@ public class SaleDocumentService {
      * Générer un numéro de document unique
      */
     private String generateDocumentNumber(SaleDocumentType type) {
-        String prefix = switch (type) {
-            case QUOTE -> "QUO";
-            case ORDER -> "ORD";
-            case DELIVERY_NOTE -> "DEL";
-            case INVOICE -> "INV";
-        };
+        String prefix;
+        switch (type) {
+            case QUOTE:
+                prefix = "QUO";
+                break;
+            case ORDER:
+                prefix = "ORD";
+                break;
+            case DELIVERY_NOTE:
+                prefix = "DEL";
+                break;
+            case INVOICE:
+                prefix = "INV";
+                break;
+            default:
+                throw new IllegalArgumentException("Type de document inconnu : " + type);
+        }
         
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         long count = saleDocumentRepository.count();
@@ -61,7 +73,6 @@ public class SaleDocumentService {
         SaleDocument doc = new SaleDocument();
         doc.setType(request.type());
         doc.setDocumentNumber(generateDocumentNumber(request.type()));
-        doc.calculateTotalAmount();
         doc.setCustomer(customerService.getCustomerById(request.customerId()));
         if (request.documentDate() != null) {
             doc.setDocumentDate(LocalDate.parse(request.documentDate()));
@@ -79,7 +90,7 @@ public class SaleDocumentService {
         doc.setCreatedAt(LocalDateTime.now());
         doc.setUpdatedAt(LocalDateTime.now());
 
-        for (var lineDto : request.lines()) {
+        for (SaleDocumentLineDto lineDto : request.lines()) {
             Product product = productService.getProductById(lineDto.productId());
             SaleDocumentLine line = new SaleDocumentLine();                                                                                                                           
             line.setProduct(product);
@@ -89,6 +100,7 @@ public class SaleDocumentService {
                                                                                                                                                                                         
             doc.addLine(line);  
         }
+        doc.calculateTotalAmount();
         saleDocumentRepository.save(doc);
 
         return doc;
@@ -117,7 +129,7 @@ public class SaleDocumentService {
                     line.getQuantity(),
                     line.getUnitPrice(),
                     line.getLineTotal()
-                )).toList(),
+                )).collect(Collectors.toList()),
                 doc.getCreatedAt().toString(),
                 doc.getUpdatedAt().toString(),
                 doc.getConvertedFromDocumentNumber()
@@ -191,7 +203,7 @@ public class SaleDocumentService {
         try{
             SaleDocument original = saleDocumentRepository.findByDocumentNumber(documentNumber)
             .orElseThrow(() -> new RuntimeException("Document non trouvé : " + documentNumber));                                                                                                         
-            SaleDocument newDoc = original.convertTo(newType);
+            SaleDocument newDoc = original.convertTo(original, newType);
             newDoc.setDocumentNumber(generateDocumentNumber(newType));
             return saleDocumentRepository.save(newDoc);   
         } catch (Exception e) {
@@ -215,7 +227,7 @@ public class SaleDocumentService {
                 line.getQuantity(),
                 line.getUnitPrice(),
                 line.getLineTotal()
-            )).toList(),
+            )).collect(Collectors.toList()),
             document.getCreatedAt().toString(),
             document.getUpdatedAt().toString(),
             document.getConvertedFromDocumentNumber()

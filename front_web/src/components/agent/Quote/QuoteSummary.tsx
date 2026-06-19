@@ -1,11 +1,9 @@
 import type { QuoteItem } from "./NewQuote";
 import { Box, Typography, Divider } from "@mui/material";
-import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 interface QuoteSummaryProps{
     items: QuoteItem[];
 }
-
 
 
 function QuoteSummary({ items }: QuoteSummaryProps) {
@@ -31,7 +29,7 @@ function QuoteSummary({ items }: QuoteSummaryProps) {
                     backgroundColor: "info.50",
                     display: "flex", alignItems: "center", justifyContent: "center"
                 }}>
-                    {/*<ShoppingBagOutlinedIcon sx={{ fontSize: 16, color: "info.main" }} />*/}
+                    <ShoppingCartIcon sx={{ fontSize: 16, color: "info.main" }} />
                 </Box>
                 <Box>
                     <Typography variant="body1" fontWeight={500}>{nmbr_colis} articles</Typography>
@@ -57,6 +55,7 @@ function QuoteSummary({ items }: QuoteSummaryProps) {
             </Box>
 
         </Box>
+        
     );
 }
 
