@@ -1,3 +1,22 @@
+/*
+
+            == AgentPage ==
+  -------------------------------------
+  |       |                           |
+  |       |      Header               |             
+  |       |---------------------------|
+  |   S   |                           |
+  |   i   |                           |
+  |   d   |                           |
+  |   e   |         Home              |
+  |   B   |                           |
+  |   a   |                           |
+  |   r   |                           |
+  |       |                           |
+  -------------------------------------
+
+*/
+
 import { useState } from 'react';
 import { Box } from '@mui/material';
 import AgentSidebar, { type SectionKey } from '../components/agent/Agent/AgentSidebar';
@@ -12,16 +31,11 @@ interface AgentPageProps {
 }
 
 function AgentPage({ user, onLogout }: AgentPageProps) {
-  const [activeSection, setActiveSection] = useState<SectionKey | null>(null);
+  const [activeSection, setActiveSection] = useState<SectionKey | null>('dashboard');
   const [currentTask, setCurrentTask] = useState<string | null>(null);
 
   const handleClientCreated = (_customer: Customer) => {
     // sera utilisé pour rafraîchir la liste clients
-  };
-
-  const handleAction = (action: string) => {
-    if (action === 'add-client') setCurrentTask('add-client');
-    if (action === 'new-quote') setCurrentTask('new-quote');
   };
 
   return (
@@ -39,7 +53,6 @@ function AgentPage({ user, onLogout }: AgentPageProps) {
           activeSection={activeSection}
           username={user.username}
           onLogout={onLogout}
-          onAction={handleAction}
           setCurrentTask={setCurrentTask}
         />
 

@@ -57,6 +57,15 @@ public class FinancialAccount {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (balance == null) {
+            balance = BigDecimal.ZERO;
+        }
+        if (active == null) {
+            active = true;
+        }
+        if (currency == null) {
+            currency = "EUR";
+        }
     }
     
     @PreUpdate

@@ -49,7 +49,7 @@ function QuoteLine({ item, onRemove, onUpdateQty }: QuoteLineProps) {
               const val = parseInt(e.target.value, 10);
               if (!isNaN(val)) onUpdateQty(val);
             }}
-            slotProps={{ htmlInput: { min: 1, style: { textAlign: 'center', width: 44, padding: '4px 6px' } } }}
+            inputProps={{ min: 1, style: { textAlign: 'center', width: 44, padding: '4px 6px' } }}
           />
         </Box>
 

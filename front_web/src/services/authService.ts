@@ -4,6 +4,7 @@ export interface AuthResponse {
   id: number;
   username: string;
   role: string;
+  customerId?: number | null;
   token: string;
 }
 

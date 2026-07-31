@@ -18,6 +18,16 @@ export const productService = {
     return response.data;
   },
 
+  getAll: async (): Promise<Product[]> => {
+    const response = await api.get<Product[]>(`/api/products`);
+    return response.data;
+  },
+
+  getLowStock: async (): Promise<Product[]> => {
+    const response = await api.get<Product[]>(`/api/products/low-stock`);
+    return response.data;
+  },
+
   createSaleDocument: async (request: SaleDocumentRequest): Promise<void> => {
     const answer = await api.post('/api/sale-documents', request);
     return answer.data;

@@ -171,6 +171,7 @@ public class SaleDocument {
                     || (newType == SaleDocumentType.INVOICE && !original.convertedOrderToInvoice);
             case DELIVERY_NOTE -> (newType == SaleDocumentType.INVOICE && !original.convertedDeliveryNoteToInvoice);
             case INVOICE -> false;
+            case CREDIT_NOTE -> false;
         };
     }
 
@@ -189,6 +190,7 @@ public class SaleDocument {
                 if (newType == SaleDocumentType.INVOICE) convertedDeliveryNoteToInvoice = true;
             }
             case INVOICE -> { }
+            case CREDIT_NOTE -> { }
         }
     }
 
@@ -196,7 +198,7 @@ public class SaleDocument {
         return switch (newType) {
             case ORDER -> SaleDocumentStatus.CONFIRMED;
             case DELIVERY_NOTE -> SaleDocumentStatus.IN_PREPARATION;
-            case QUOTE, INVOICE -> SaleDocumentStatus.DRAFT;
+            case QUOTE, INVOICE, CREDIT_NOTE -> SaleDocumentStatus.DRAFT;
         };
     }
 }

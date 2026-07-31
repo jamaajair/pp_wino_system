@@ -6,6 +6,7 @@ import com.wino.demo.user.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,11 +34,12 @@ public class AuthController {
         }
 
         User user = userOpt.get();
-        return ResponseEntity.ok(Map.of(
-            "id", user.getId(),
-            "username", user.getUsername(),
-            "role", user.getRole().name(),
-            "token", jwtService.generateToken(user)
-        ));
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", user.getId());
+        response.put("username", user.getUsername());
+        response.put("role", user.getRole().name());
+        response.put("customerId", user.getCustomerId());
+        response.put("token", jwtService.generateToken(user));
+        return ResponseEntity.ok(response);
     }
 }

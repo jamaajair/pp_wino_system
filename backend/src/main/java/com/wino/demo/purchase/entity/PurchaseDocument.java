@@ -74,6 +74,9 @@ public class PurchaseDocument {
         if (status == null) {
             status = "DRAFT";
         }
+        if (stockUpdated == null) {
+            stockUpdated = false;
+        }
     }
     
     @PreUpdate
@@ -129,10 +132,9 @@ public class PurchaseDocument {
             movement.setQuantity(line.getQuantity().intValue());
             movement.setReason("Réception fournisseur");
             movement.setReferenceDocument(this.documentNumber);
-            
-            // Appliquer le mouvement au produit
-            movement.apply();
-            
+
+            // Ne pas appliquer ici : StockMovementService.createStockMovement()
+            // applique le mouvement au stock (éviter le double comptage).
             movements.add(movement);
         }
         

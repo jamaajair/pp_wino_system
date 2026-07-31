@@ -50,7 +50,7 @@ function QuoteSummary({ items }: QuoteSummaryProps) {
                 </Box>
                 <Box sx={{ textAlign: "right" }}>
                     <Typography variant="caption" color="text.secondary" sx={{ textTransform: "uppercase", letterSpacing: "0.05em" }}>A Payer</Typography>
-                    <Typography variant="h6" fontWeight={500} color="info.main">{total_ttc.toFixed(2)} €</Typography>
+                    <Typography variant="h6" fontWeight={500} color="#c24700">{total_ttc.toFixed(2)} €</Typography>
                 </Box>
             </Box>
 

@@ -3,21 +3,21 @@ import {
   Alert, Box, Button, Chip, CircularProgress,
   Divider, InputAdornment, Paper, TextField, Typography,
 } from '@mui/material';
-import { Search, User, Building2, Phone, Mail, MapPin, Hash, X } from 'lucide-react';
-import { customerService } from '../../services/customerService';
-import type { Customer } from '../../types';
+import { Search, Hash, Package, Tag, Percent, Boxes, FileText, Ruler, X } from 'lucide-react';
+import { articleService } from '../../../services/articleService';
+import type { Article } from '../../../types';
 
-interface SearchClientFormProps {
+interface SearchArticleFormProps {
   onClose: () => void;
-  onSelected?: (customer: Customer) => void;
+  onSelected?: (article: Article) => void;
 }
 
-function CustomerCard({
-  customer,
+function ArticleCard({
+  article,
   selected,
   onClick,
 }: {
-  customer: Customer;
+  article: Article;
   selected: boolean;
   onClick: () => void;
 }) {
@@ -43,37 +43,28 @@ function CustomerCard({
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}
         >
-          {customer.customerType === 'COMPANY'
-            ? <Building2 size={16} color={selected ? 'white' : '#1a237e'} />
-            : <User size={16} color={selected ? 'white' : '#1a237e'} />}
+          <Package size={16} color={selected ? 'white' : '#1a237e'} />
         </Box>
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography fontWeight={600} fontSize="0.875rem" color="#1a237e" noWrap>
-            {customer.name}
+            {article.name}
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 0.25 }}>
             <Typography fontSize="0.75rem" color="#757575" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Hash size={11} /> {customer.code}
+              <Hash size={11} /> {article.code}
             </Typography>
-            {customer.email && (
-              <Typography fontSize="0.75rem" color="#757575" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }} noWrap>
-                <Mail size={11} /> {customer.email}
-              </Typography>
-            )}
-            {customer.phone && (
-              <Typography fontSize="0.75rem" color="#757575" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Phone size={11} /> {customer.phone}
-              </Typography>
-            )}
+            <Typography fontSize="0.75rem" color="#757575" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Tag size={11} /> {article.salePrice} €
+            </Typography>
           </Box>
         </Box>
         <Chip
-          label={customer.customerType === 'COMPANY' ? 'Société' : 'Particulier'}
+          label={`Stock: ${article.stockQuantity}`}
           size="small"
           sx={{
             fontSize: '0.68rem', height: 20, flexShrink: 0,
-            backgroundColor: customer.customerType === 'COMPANY' ? '#e8eaf6' : '#fce4ec',
-            color: customer.customerType === 'COMPANY' ? '#1a237e' : '#880e4f',
+            backgroundColor: article.stockQuantity > 0 ? '#e8f5e9' : '#ffebee',
+            color: article.stockQuantity > 0 ? '#1b5e20' : '#b71c1c',
           }}
         />
       </Box>
@@ -81,9 +72,9 @@ function CustomerCard({
   );
 }
 
-function CustomerDetail({ customer }: { customer: Customer }) {
+function ArticleDetail({ article }: { article: Article }) {
   const row = (icon: React.ReactNode, label: string, value?: string | number) =>
-    value ? (
+    value !== undefined && value !== null && value !== '' ? (
       <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start', py: 0.75 }}>
         <Box sx={{ color: '#9e9e9e', mt: 0.1, flexShrink: 0 }}>{icon}</Box>
         <Box>
@@ -98,14 +89,12 @@ function CustomerDetail({ customer }: { customer: Customer }) {
       {/* En-tête */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
         <Box sx={{ width: 44, height: 44, borderRadius: '50%', backgroundColor: '#1a237e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {customer.customerType === 'COMPANY'
-            ? <Building2 size={20} color="white" />
-            : <User size={20} color="white" />}
+          <Package size={20} color="white" />
         </Box>
         <Box>
-          <Typography fontWeight={700} fontSize="1rem" color="#1a237e">{customer.name}</Typography>
+          <Typography fontWeight={700} fontSize="1rem" color="#1a237e">{article.name}</Typography>
           <Chip
-            label={customer.customerType === 'COMPANY' ? 'Société' : 'Particulier'}
+            label={`Stock: ${article.stockQuantity}`}
             size="small"
             sx={{ fontSize: '0.68rem', height: 18, backgroundColor: '#e8eaf6', color: '#1a237e' }}
           />
@@ -114,27 +103,22 @@ function CustomerDetail({ customer }: { customer: Customer }) {
 
       <Divider sx={{ mb: 1.5 }} />
 
-      {row(<Hash size={14} />, 'Code client', customer.code)}
-      {row(<Mail size={14} />, 'Email', customer.email)}
-      {row(<Phone size={14} />, 'Téléphone', customer.phone)}
-      {row(<Hash size={14} />, 'N° TVA', customer.taxId)}
-      {row(
-        <MapPin size={14} />,
-        'Adresse',
-        [customer.address, customer.city, customer.postalCode, customer.country].filter(Boolean).join(', '),
-      )}
-      {customer.creditLimit !== undefined &&
-        row(<Hash size={14} />, 'Limite de crédit', `${customer.creditLimit} €`)}
-      {customer.balance !== undefined &&
-        row(<Hash size={14} />, 'Solde', `${customer.balance} €`)}
+      {row(<Hash size={14} />, 'Code article', article.code)}
+      {row(<FileText size={14} />, 'Description', article.description)}
+      {row(<Tag size={14} />, 'Prix de vente', `${article.salePrice} €`)}
+      {row(<Tag size={14} />, "Prix d'achat", `${article.purchasePrice} €`)}
+      {row(<Percent size={14} />, 'TVA', `${article.tva} %`)}
+      {row(<Ruler size={14} />, 'Unité', article.unit)}
+      {row(<Boxes size={14} />, 'Quantité par colis', article.qteColis)}
+      {row(<Package size={14} />, 'Stock', article.stockQuantity)}
     </Paper>
   );
 }
 
-function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
+function SearchArticle({ onClose, onSelected }: SearchArticleFormProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Customer[]>([]);
-  const [selected, setSelected] = useState<Customer | null>(null);
+  const [results, setResults] = useState<Article[]>([]);
+  const [selected, setSelected] = useState<Article | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -147,7 +131,7 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
     setError(null);
     setSelected(null);
     try {
-      const data = await customerService.search(q);
+      const data = await articleService.search(q);
       setResults(data);
       setSearched(true);
     } catch {
@@ -170,8 +154,8 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
     inputRef.current?.focus();
   };
 
-  const handleSelect = (customer: Customer) => {
-    setSelected(prev => prev?.code === customer.code ? null : customer);
+  const handleSelect = (article: Article) => {
+    setSelected(prev => prev?.code === article.code ? null : article);
   };
 
   const handleConfirm = () => {
@@ -186,10 +170,10 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
         {/* Header */}
         <Box sx={{ mb: 3 }}>
           <Typography variant="h5" fontWeight={700} color="#1a237e">
-            Recherche Rapide Client
+            Recherche Rapide Article
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Recherchez par nom, code, email ou téléphone.
+            Recherchez par nom ou code.
           </Typography>
         </Box>
 
@@ -198,7 +182,7 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
           <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
             <TextField
               inputRef={inputRef}
-              placeholder="Nom, code, email, téléphone…"
+              placeholder="Nom, code…"
               value={query}
               onChange={e => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -258,7 +242,7 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
           results.length === 0 ? (
             <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid #e8eaf6', textAlign: 'center' }}>
               <Search size={36} color="#bdbdbd" />
-              <Typography color="#9e9e9e" mt={1.5}>Aucun client trouvé pour « {query} »</Typography>
+              <Typography color="#9e9e9e" mt={1.5}>Aucun article trouvé pour « {query} »</Typography>
             </Paper>
           ) : (
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
@@ -268,12 +252,12 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
                 <Typography fontSize="0.75rem" color="#9e9e9e" fontWeight={600} textTransform="uppercase" letterSpacing={0.8} mb={0.5}>
                   {results.length} résultat{results.length > 1 ? 's' : ''}
                 </Typography>
-                {results.map(c => (
-                  <CustomerCard
-                    key={c.code}
-                    customer={c}
-                    selected={selected?.code === c.code}
-                    onClick={() => handleSelect(c)}
+                {results.map(a => (
+                  <ArticleCard
+                    key={a.id ?? a.code}
+                    article={a}
+                    selected={selected?.code === a.code}
+                    onClick={() => handleSelect(a)}
                   />
                 ))}
               </Box>
@@ -282,9 +266,9 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
               {selected && (
                 <Box sx={{ width: 300, flexShrink: 0 }}>
                   <Typography fontSize="0.75rem" color="#9e9e9e" fontWeight={600} textTransform="uppercase" letterSpacing={0.8} mb={0.5}>
-                    Détail client
+                    Détail article
                   </Typography>
-                  <CustomerDetail customer={selected} />
+                  <ArticleDetail article={selected} />
                   {onSelected && (
                     <Button
                       variant="contained"
@@ -299,7 +283,7 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
                         '&:hover': { backgroundColor: '#0d1757' },
                       }}
                     >
-                      Sélectionner ce client
+                      Sélectionner cet article
                     </Button>
                   )}
                 </Box>
@@ -324,4 +308,4 @@ function SearchClientForm({ onClose, onSelected }: SearchClientFormProps) {
   );
 }
 
-export default SearchClientForm;
+export default SearchArticle;

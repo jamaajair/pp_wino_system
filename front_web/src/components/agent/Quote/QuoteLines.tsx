@@ -53,7 +53,7 @@ function QuoteLines({ items, onRemove, onUpdateQty }: QuoteLinesProps) {
         </Box>
       </Box>
 
-      {items.map(item => (
+      { items.map(item => (
         <QuoteLine
           key={item.product.id}
           item={item}

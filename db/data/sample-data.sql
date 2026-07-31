@@ -432,6 +432,12 @@ UPDATE financial_accounts SET balance = 13807.40 WHERE id = 1;
 UPDATE financial_accounts SET balance = 3021.48  WHERE id = 2;
 
 -- ========================================
+-- LIEN COMPTE CLIENT (user CUSTOMER -> fiche client)
+-- ========================================
+UPDATE users SET customer_id = (SELECT id FROM customers WHERE code = 'CLI003')
+WHERE username = 'client1';
+
+-- ========================================
 -- VÉRIFICATION DES DONNÉES INSÉRÉES
 -- ========================================
 SELECT 'Utilisateurs'            AS table_name, COUNT(*) AS nombre FROM users

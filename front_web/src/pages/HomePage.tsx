@@ -1,13 +1,17 @@
 // front_web/src/pages/HomePage.tsx
 
+//---------------------------------------------------
+// Ceci est une page pour le client pas pour l'agent
+//---------------------------------------------------
+
 import { useEffect, useState } from 'react';
-import { Box, CircularProgress, Container, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, Container, Snackbar, Typography } from '@mui/material';
 import Sidebar from '../components/Sidebar';
 import ProductGrid from '../components/ProductGrid';
-import type { Product } from '../components/ProductCard';
-import type { CartItem, Category } from '../types';
+import type { CartItem, Category, Product, SaleDocumentRequest } from '../types';
 import { getCategories } from '../services/categoryService';
 import { productService } from '../services/productService';
+import { getStoredUser } from '../services/authService';
 import CartPage from '../components/CartPage';
 
 interface HomePageProps {
@@ -24,6 +28,31 @@ function HomePage({ onAddToCart, view, cartItems, setCartItems, setView }: HomeP
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [loading, setLoading]               = useState<boolean>(true);
   const [error, setError]                   = useState<string | null>(null);
+  const [feedback, setFeedback]             = useState<{ severity: 'success' | 'error'; text: string } | null>(null);
+
+  const handleValidateOrder = async () => {
+    const user = getStoredUser();
+    if (!user?.customerId) {
+      setFeedback({ severity: 'error', text: "Votre compte n'est pas relié à une fiche client. Contactez un agent." });
+      return;
+    }
+    if (cartItems.length === 0) return;
+    try {
+      const request: SaleDocumentRequest = {
+        type: 'ORDER',
+        status: 'SENT',
+        customerId: user.customerId,
+        lines: cartItems.map(i => ({ productId: i.product.id, quantity: i.quantity })),
+      };
+      await productService.createSaleDocument(request);
+      setFeedback({ severity: 'success', text: 'Commande envoyée ! Un agent va la traiter.' });
+      setCartItems([]);
+      setView('shop');
+    } catch (e) {
+      console.error('Erreur envoi commande', e);
+      setFeedback({ severity: 'error', text: "Erreur lors de l'envoi de la commande." });
+    }
+  };
 
   useEffect(() => {
     getCategories()
@@ -94,8 +123,7 @@ function HomePage({ onAddToCart, view, cartItems, setCartItems, setView }: HomeP
             cartItems={cartItems}
             onBack={() => setView('shop')}
             onCancel={() => { setCartItems([]); setView('shop'); }}
-            onValidate={() => { alert('Commande validée !');
-            setCartItems([]); setView('shop'); }}
+            onValidate={handleValidateOrder}
             />
           )
         }
@@ -107,8 +135,21 @@ function HomePage({ onAddToCart, view, cartItems, setCartItems, setView }: HomeP
           />
       )
         }
-        
+
       </Box>
+
+      <Snackbar
+        open={feedback !== null}
+        autoHideDuration={4000}
+        onClose={() => setFeedback(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        {feedback ? (
+          <Alert severity={feedback.severity} onClose={() => setFeedback(null)}>
+            {feedback.text}
+          </Alert>
+        ) : undefined}
+      </Snackbar>
     </Container>
   );
 }

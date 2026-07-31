@@ -84,11 +84,14 @@ public class PurchaseDocumentService {
             throw new RuntimeException("Le fournisseur est requis");
         }
         
-        // Associer les lignes au document
+        // Associer les lignes au document et calculer leur total
         if (purchaseDocument.getLines() != null) {
-            purchaseDocument.getLines().forEach(line -> line.setPurchaseDocument(purchaseDocument));
+            purchaseDocument.getLines().forEach(line -> {
+                line.setPurchaseDocument(purchaseDocument);
+                line.calculateLineTotal();
+            });
         }
-        
+
         // Calculer le montant total
         purchaseDocument.calculateTotalAmount();
         

@@ -7,6 +7,11 @@ export const customerService = {
     return res.data.data;
   },
 
+  getAll: async (): Promise<Customer[]> => {
+    const res = await api.get('/api/customers');
+    return res.data;
+  },
+
   search: async (query: string): Promise<Customer[]> => {
     console.log('Search customers response:', query);
     const res = await api.get('/api/customers/value', { params: { keyword: query } });

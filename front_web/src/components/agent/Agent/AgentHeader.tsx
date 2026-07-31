@@ -11,46 +11,45 @@ interface AgentHeaderProps {
   activeSection: SectionKey | null;
   username: string;
   onLogout: () => void;
-  onAction?: (action: string) => void;
   setCurrentTask?: (task: string | null) => void;
 }
 
-function getHeaderButtons(section: SectionKey | null, onAction?: (action: string) => void): ActionButton[] {
-  if (!section || !onAction) return [];
+function getHeaderButtons(section: SectionKey | null, setCurrentTask?: (action: string) => void): ActionButton[] {
+  if (!section || !setCurrentTask) return [];
 
   const config: Record<SectionKey, ActionButton[]> = {
     dashboard: [],
     clients: [
-      { label: '+ Ajouter Client',  onClick: () => onAction('add-client') },
-      { label: 'Trouver Client',    onClick: () => onAction('find-client') },
+      { label: '+ Ajouter Client',  onClick: () => setCurrentTask('add-client') },
+      { label: 'Trouver Client',    onClick: () => setCurrentTask('find-client') },
     ],
     ventes: [
-      { label: '+ Nouveau Devis',      onClick: () => onAction('new-quote') },
-      { label: '+ Nouvelle Commande',  onClick: () => onAction('new-order') },
-      { label: '+ Nouvelle Facture',   onClick: () => onAction('new-invoice') },
-      { label: '+ Note de Crédit',     onClick: () => onAction('new-credit-note') },
+      { label: '+ Nouveau Devis',      onClick: () => setCurrentTask('new-quote') },
+      { label: '+ Nouvelle Commande',  onClick: () => setCurrentTask('new-order') },
+      { label: '+ Nouvelle Facture',   onClick: () => setCurrentTask('new-invoice') },
+      { label: '+ Note de Crédit',     onClick: () => setCurrentTask('new-credit-note') },
     ],
     articles: [
-      { label: '+ Nouvel Article', onClick: () => onAction('new-article') },
-      { label: 'Rechercher',       onClick: () => onAction('search-article') },
+      { label: '+ Nouvel Article', onClick: () => setCurrentTask('new-article') },
+      { label: 'Rechercher',       onClick: () => setCurrentTask('search-article') },
     ],
     fournisseurs: [
-      { label: '+ Ajouter Fournisseur', onClick: () => onAction('add-supplier') },
+      { label: '+ Ajouter Fournisseur', onClick: () => setCurrentTask('add-supplier') },
     ],
     stock: [
-      { label: '+ Entrée Stock',  onClick: () => onAction('stock-in') },
-      { label: '+ Sortie Stock',  onClick: () => onAction('stock-out') },
+      { label: '+ Entrée Stock',  onClick: () => setCurrentTask('stock-in') },
+      { label: '+ Sortie Stock',  onClick: () => setCurrentTask('stock-out') },
     ],
     finances: [
-      { label: '+ Nouvelle Transaction', onClick: () => onAction('new-transaction') },
+      { label: '+ Nouvelle Transaction', onClick: () => setCurrentTask('new-transaction') },
     ],
   };
 
   return config[section] ?? [];
 }
 
-function AgentHeader({ activeSection, username, onLogout, onAction, setCurrentTask }: AgentHeaderProps) {
-  const buttons = getHeaderButtons(activeSection, onAction);
+function AgentHeader({ activeSection, username, onLogout, setCurrentTask }: AgentHeaderProps) {
+  const buttons = getHeaderButtons(activeSection, setCurrentTask);
 
   const sectionLabels: Record<SectionKey, string> = {
     dashboard:    'Tableau de Bord',
@@ -61,10 +60,6 @@ function AgentHeader({ activeSection, username, onLogout, onAction, setCurrentTa
     stock:        'Stock',
     finances:     'Finances',
   };
-
-  // const HandleClickButton(btn){
-  //   btn.onClick();
-  // };
 
   return (
     <AppBar
@@ -84,6 +79,7 @@ function AgentHeader({ activeSection, username, onLogout, onAction, setCurrentTa
           color="#1a237e"
           sx={{ mr: 2, minWidth: 140 }}
         >
+           
           {activeSection ? sectionLabels[activeSection] : ''}
         </Typography>
 
@@ -95,7 +91,6 @@ function AgentHeader({ activeSection, username, onLogout, onAction, setCurrentTa
               variant="contained"
               size="small"
               onClick={
-                // HandleClickButton(btn);
                 () => {
                 btn.onClick();
               }}

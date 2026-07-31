@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Chip, Tabs, Tab, CircularProgress,
+  TableHead, TableRow, Paper, Chip, CircularProgress,
   IconButton, Tooltip, Drawer, Divider,
   Button,  Menu, MenuItem
 } from '@mui/material';
@@ -9,12 +9,14 @@ import { KeyboardArrowUp } from "@mui/icons-material";
 import { Eye, X } from 'lucide-react';
 import type { SaleDocumentResponse, DocumentType } from '../../../types';
 import { saleDocumentService } from '../../../services/saleDocumentService';
+import AppTabs from '../UsefeulComponents/Tabs';
 
 const TYPE_LABELS: Record<DocumentType, string> = {
   QUOTE: 'Devis',
   ORDER: 'Commande',
   INVOICE: 'Facture',
   DELIVERY_NOTE: 'Bon de livraison',
+  CREDIT_NOTE: 'Note de Crédit'
 };
 
 const TYPE_COLORS: Record<DocumentType, 'info' | 'primary' | 'success' | 'warning'> = {
@@ -22,6 +24,7 @@ const TYPE_COLORS: Record<DocumentType, 'info' | 'primary' | 'success' | 'warnin
   ORDER: 'primary',
   INVOICE: 'success',
   DELIVERY_NOTE: 'warning',
+  CREDIT_NOTE: 'info'
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -38,16 +41,18 @@ const STATUS_COLORS: Record<string, 'default' | 'info' | 'success' | 'error'> = 
   CANCELLED: 'error',
 };
 
-const TABS = ['ALL', 'QUOTE', 'ORDER', 'INVOICE', 'DELIVERY_NOTE'] as const;
-type TabValue = typeof TABS[number];
+const TABS = [
+  { value: 'ALL', label: 'Tous' },
+  { value: 'QUOTE', label: 'Devis' },
+  { value: 'ORDER', label: 'Commandes' },
+  { value: 'INVOICE', label: 'Factures' },
+  { value: 'DELIVERY_NOTE', label: 'Bons de livraison' },
+  { value: 'CREDIT_NOTE', label: 'Notes de crédit' },
+] as const;
 
-const TAB_LABELS: Record<TabValue, string> = {
-  ALL: 'Tous',
-  QUOTE: 'Devis',
-  ORDER: 'Commandes',
-  INVOICE: 'Factures',
-  DELIVERY_NOTE: 'Bons de livraison',
-};
+type TabValue = typeof TABS[number]['value'];
+
+
 
 function ListeVentes() {
   const [documents, setDocuments] = useState<SaleDocumentResponse[]>([]);
@@ -94,15 +99,11 @@ function ListeVentes() {
         Documents de vente
       </Typography>
 
-      <Tabs
+      <AppTabs<TabValue>
+        tabs={TABS.map(t => ({ value: t.value, label: t.label }))}
         value={activeTab}
-        onChange={(_, v: TabValue) => setActiveTab(v)}
-        sx={{ mb: 2, borderBottom: '1px solid #e0e0e0' }}
-      >
-        {TABS.map(t => (
-          <Tab key={t} value={t} label={TAB_LABELS[t]} />
-        ))}
-      </Tabs>
+        onChange={setActiveTab}
+      />
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 8 }}>

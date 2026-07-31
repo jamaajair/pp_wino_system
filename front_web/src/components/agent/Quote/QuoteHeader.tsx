@@ -137,8 +137,8 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
             sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2.5 } }}
           />
           <Autocomplete
-            key={productInputKey}
-            options={optionsProduct}
+            key={productInputKey} 
+            options={optionsProduct} 
             loading={loading}
             onInputChange={handleInputChangeProduct}
             onChange={(_, value) => {
@@ -255,7 +255,15 @@ function QuoteHeader({onCancel, quoteNumber, customer, setCustomer, addProduct, 
           </Snackbar>
         )}
 
-        <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'flex-end', gap: 1.2, px: 2 }}>
+        <Box 
+          sx={{ 
+            mt: 1.5,
+            display: 'flex',
+            justifyContent: 'flex-end', 
+            gap: 1.2, 
+            px: 2
+            }}
+          >
           <Button
             variant="contained"
             disableElevation

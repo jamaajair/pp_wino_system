@@ -4,5 +4,6 @@ public enum SaleDocumentType {
     QUOTE,          
     ORDER,        
     DELIVERY_NOTE,
-    INVOICE 
+    INVOICE,
+    CREDIT_NOTE,
 }

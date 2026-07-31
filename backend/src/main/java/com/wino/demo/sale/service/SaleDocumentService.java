@@ -56,6 +56,9 @@ public class SaleDocumentService {
             case INVOICE:
                 prefix = "INV";
                 break;
+            case CREDIT_NOTE:
+                prefix = "CN";
+                break;
             default:
                 throw new IllegalArgumentException("Type de document inconnu : " + type);
         }
@@ -96,9 +99,10 @@ public class SaleDocumentService {
             line.setProduct(product);
             line.setQuantity(lineDto.quantity());                                                                                                                                     
             line.setUnitPrice(product.getSalePrice());
-            line.setDiscountPercent(BigDecimal.ZERO);                                                                                                                                 
-                                                                                                                                                                                        
-            doc.addLine(line);  
+            line.setDiscountPercent(BigDecimal.ZERO);
+            line.calculateLineTotal();
+
+            doc.addLine(line);
         }
         doc.calculateTotalAmount();
         saleDocumentRepository.save(doc);

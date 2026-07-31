@@ -75,6 +75,9 @@ public class FinancialTransaction {
         if (transactionDate == null) {
             transactionDate = LocalDate.now();
         }
+        if (applied == null) {
+            applied = false;
+        }
     }
     
     @PreUpdate

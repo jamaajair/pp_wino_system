@@ -1,29 +1,28 @@
 import { useState } from 'react';
 import {
-  Alert, Box, Button, Chip, MenuItem, Paper,
-  TextField, Typography,
+  Alert, Box, Button, Paper, TextField, Typography,
 } from '@mui/material';
-import { User, Building2, Phone, Mail, MapPin, CreditCard, Hash } from 'lucide-react';
-import { customerService } from '../../services/customerService';
-import type { Customer, CustomerType } from '../../types';
+import { Building2, Phone, Mail, MapPin, Hash, User, CalendarClock } from 'lucide-react';
+import { supplierService } from '../../../services/supplierService';
+import type { Supplier } from '../../../types';
 
-interface AddClientFormProps {
+interface AddSupplierFormProps {
   onClose: () => void;
-  onCreated: (customer: Customer) => void;
+  onCreated: (supplier: Supplier) => void;
 }
 
-const EMPTY: Customer = {
+const EMPTY: Supplier = {
   code: '',
   name: '',
-  customerType: 'COMPANY',
   email: '',
   phone: '',
   taxId: '',
+  contactPerson: '',
   address: '',
   city: '',
   postalCode: '',
   country: '',
-  creditLimit: undefined,
+  paymentTerms: undefined,
 };
 
 const FIELD_SX = {
@@ -47,17 +46,18 @@ function SectionTitle({ icon, label }: { icon: React.ReactNode; label: string })
   );
 }
 
-function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
-  const [form, setForm] = useState<Customer>(EMPTY);
+function AddSupplierForm({ onClose, onCreated }: AddSupplierFormProps) {
+  const [form, setForm] = useState<Supplier>(EMPTY);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (field: keyof Customer) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (field: keyof Supplier) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const handleTypeToggle = (type: CustomerType) => {
-    setForm(prev => ({ ...prev, customerType: type }));
+  const handleNumber = (field: keyof Supplier) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setForm(prev => ({ ...prev, [field]: v === '' ? undefined : Number(v) }));
   };
 
   const handleSubmit = async () => {
@@ -69,7 +69,7 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
     setError(null);
     try {
       form.active = true;
-      const created = await customerService.create(form);
+      const created = await supplierService.create(form);
       onCreated(created);
       setForm(EMPTY);
       onClose();
@@ -93,10 +93,10 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
         {/* Header */}
         <Box sx={{ mb: 3 }}>
           <Typography variant="h5" fontWeight={700} color="#1a237e">
-            Nouveau Client
+            Nouveau Fournisseur
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Remplissez les informations pour créer un nouveau client.
+            Remplissez les informations pour créer un nouveau fournisseur.
           </Typography>
         </Box>
 
@@ -106,34 +106,6 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
           <Paper elevation={0} sx={{ p: 2.5, borderRadius: 3, border: '1px solid #e8eaf6' }}>
             <SectionTitle icon={<Building2 size={15} />} label="Identité" />
             <Box sx={{ display: 'flex', gap: 2, mt: 2, mb: 2 }}>
-              <Chip
-                label="Société"
-                icon={<Building2 size={14} />}
-                onClick={() => handleTypeToggle('COMPANY')}
-                variant={form.customerType === 'COMPANY' ? 'filled' : 'outlined'}
-                sx={{
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  ...(form.customerType === 'COMPANY'
-                    ? { backgroundColor: '#1a237e', color: 'white', '& .MuiChip-icon': { color: 'white' } }
-                    : { borderColor: '#c5cae9', color: '#555' }),
-                }}
-              />
-              <Chip
-                label="Particulier"
-                icon={<User size={14} />}
-                onClick={() => handleTypeToggle('INDIVIDUAL')}
-                variant={form.customerType === 'INDIVIDUAL' ? 'filled' : 'outlined'}
-                sx={{
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  ...(form.customerType === 'INDIVIDUAL'
-                    ? { backgroundColor: '#1a237e', color: 'white', '& .MuiChip-icon': { color: 'white' } }
-                    : { borderColor: '#c5cae9', color: '#555' }),
-                }}
-              />
-            </Box>
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
               <TextField
                 label="Code *"
                 value={form.code}
@@ -150,14 +122,23 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
                 sx={{ flex: 1, ...FIELD_SX }}
               />
             </Box>
-            <TextField
-              label="Nom complet *"
-              value={form.name}
-              onChange={handleChange('name')}
-              size="small"
-              fullWidth
-              sx={FIELD_SX}
-            />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Nom du fournisseur *"
+                value={form.name}
+                onChange={handleChange('name')}
+                size="small"
+                sx={{ flex: 2, ...FIELD_SX }}
+              />
+              <TextField
+                label="Personne de contact"
+                value={form.contactPerson}
+                onChange={handleChange('contactPerson')}
+                size="small"
+                sx={{ flex: 1.5, ...FIELD_SX }}
+                InputProps={{ startAdornment: <User size={15} color="#9e9e9e" style={{ marginRight: 6 }} /> }}
+              />
+            </Box>
           </Paper>
 
           {/* Contact */}
@@ -223,18 +204,19 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
             </Box>
           </Paper>
 
-          {/* Finance */}
+          {/* Conditions */}
           <Paper elevation={0} sx={{ p: 2.5, borderRadius: 3, border: '1px solid #e8eaf6' }}>
-            <SectionTitle icon={<CreditCard size={15} />} label="Finance" />
+            <SectionTitle icon={<CalendarClock size={15} />} label="Conditions de paiement" />
             <Box sx={{ mt: 2 }}>
               <TextField
-                label="Limite de crédit (€)"
-                value={form.creditLimit ?? ''}
-                onChange={handleChange('creditLimit')}
+                label="Délai de paiement (jours)"
+                value={form.paymentTerms ?? ''}
+                onChange={handleNumber('paymentTerms')}
                 size="small"
                 type="number"
+                placeholder="30, 60, 90…"
                 sx={{ width: 240, ...FIELD_SX }}
-                InputProps={{ startAdornment: <CreditCard size={15} color="#9e9e9e" style={{ marginRight: 6 }} /> }}
+                InputProps={{ startAdornment: <CalendarClock size={15} color="#9e9e9e" style={{ marginRight: 6 }} /> }}
               />
             </Box>
           </Paper>
@@ -263,7 +245,7 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
                 '&:hover': { backgroundColor: '#0d1757' },
               }}
             >
-              {loading ? 'Enregistrement…' : 'Enregistrer le client'}
+              {loading ? 'Enregistrement…' : 'Enregistrer le fournisseur'}
             </Button>
           </Box>
 
@@ -273,4 +255,4 @@ function AddClientForm({ onClose, onCreated }: AddClientFormProps) {
   );
 }
 
-export default AddClientForm;
+export default AddSupplierForm;
