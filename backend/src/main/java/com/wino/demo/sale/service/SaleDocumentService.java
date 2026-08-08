@@ -6,6 +6,7 @@ import com.wino.demo.sale.entity.SaleDocument;
 import com.wino.demo.sale.entity.SaleDocumentLine;
 import com.wino.demo.sale.entity.SaleDocumentStatus;
 import com.wino.demo.sale.entity.SaleDocumentType;
+import com.wino.demo.sale.exception.SaleDocumentNotFoundException;
 import com.wino.demo.sale.repository.SaleDocumentRepository;
 import com.wino.demo.customer.service.CustomerService;
 import com.wino.demo.products.entity.Product;
@@ -204,16 +205,12 @@ public class SaleDocumentService {
      * Convertir un document en un autre type
      */
     public SaleDocument convertDocument(String documentNumber, SaleDocumentType newType) {
-        try{
-            SaleDocument original = saleDocumentRepository.findByDocumentNumber(documentNumber)
-            .orElseThrow(() -> new RuntimeException("Document non trouvé : " + documentNumber));                                                                                                         
-            SaleDocument newDoc = original.convertTo(original, newType);
-            newDoc.setDocumentNumber(generateDocumentNumber(newType));
-            return saleDocumentRepository.save(newDoc);   
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la conversion du document : " + e.getMessage());
-        }                                                                                                                                                                                                                                           
-    } 
+        SaleDocument original = saleDocumentRepository.findByDocumentNumber(documentNumber)
+                .orElseThrow(() -> new SaleDocumentNotFoundException(documentNumber));
+        SaleDocument newDoc = original.convertTo(newType);
+        newDoc.setDocumentNumber(generateDocumentNumber(newType));
+        return saleDocumentRepository.save(newDoc);
+    }
 
     public SaleDocumentDto createSaleDocumentDto(SaleDocument document) {
         return new SaleDocumentDto(

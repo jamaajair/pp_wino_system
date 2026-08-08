@@ -27,7 +27,12 @@ public class PurchaseDocument {
     
     @Column(name = "document_number", nullable = false, unique = true, length = 50)
     private String documentNumber;
-    
+
+    // Référence propre au fournisseur, distincte de notre numéro interne généré :
+    // c'est elle qui figure sur le papier reçu et qui sert au rapprochement comptable.
+    @Column(name = "supplier_invoice_number", length = 100)
+    private String supplierInvoiceNumber;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PurchaseDocumentType type;

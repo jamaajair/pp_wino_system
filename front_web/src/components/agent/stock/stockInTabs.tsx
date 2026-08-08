@@ -1,13 +1,13 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { useState } from "react";
 import AppTabs from "../UsefeulComponents/Tabs";
 import PurchaseInvoice from "./PurchaseInvoice";
+import Inventaire from "./Inventaire";
 
 
 const TABS = [
     { value: 'purchaseInvoice', label: 'Facture D\'achat' },
     { value: 'inventaire', label: 'Inventaire' },
-    { value: 'autres', label: 'Autres' },
 ] as const;
 
 type StockInTabValue = typeof TABS[number]['value'];
@@ -26,21 +26,7 @@ function StockInTabs() {
 
             {activeTab === 'purchaseInvoice' && <PurchaseInvoice />}
 
-            {activeTab === 'inventaire' && (
-                <Box sx={{ p: 3 }}>
-                    <Typography color="text.secondary">
-                        Ajustement d'inventaire (à implémenter).
-                    </Typography>
-                </Box>
-            )}
-
-            {activeTab === 'autres' && (
-                <Box sx={{ p: 3 }}>
-                    <Typography color="text.secondary">
-                        Mouvements de stock manuels (à implémenter).
-                    </Typography>
-                </Box>
-            )}
+            {activeTab === 'inventaire' && <Inventaire />}
         </Box>
     );
 }

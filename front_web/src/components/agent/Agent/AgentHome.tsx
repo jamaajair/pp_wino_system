@@ -7,6 +7,10 @@ import SearchClientForm from '../Client/SearchClientForm';
 import NewQuote from '../Quote/NewQuote';
 import type { Customer } from '../../../types';
 import ListeVentes from './ListeVentes';
+import ListeClients from '../Client/ListeClients';
+import ListeArticles from '../Articles/ListeArticles';
+import ListeFournisseurs from '../Supplier/ListeFournisseurs';
+import ListeAchats from '../stock/ListeAchats';
 import NewOrder from '../Order/NewOrder';
 import NewInvoice from '../Invoice/NewInvoice';
 import NewCreditNote from '../CreditNote/NewCreditNote';
@@ -14,6 +18,7 @@ import NewArticle from '../Articles/NewArticle';
 import SearchArticle from '../Articles/SearchArticle';
 import AddSupplierForm from '../Supplier/AddSupplierForm';
 import StockIn from '../stock/Stock';
+import StockOut from '../stock/StockOut';
 import Finances from '../Finance/Finances';
 import NewTransaction from '../Finance/NewTransaction';
 import Dashboard from '../Dashboard/Dashboard';
@@ -125,6 +130,10 @@ function AgentHome({ currentTask, setCurrentTask, activeSection, onClientCreated
       );
     }
 
+    if (currentTask === 'stock-out') {
+      return <StockOut />;
+    }
+
     if (currentTask === 'search-article') {
       return (
         <SearchArticle 
@@ -148,6 +157,22 @@ function AgentHome({ currentTask, setCurrentTask, activeSection, onClientCreated
     //     </Typography>
     //   </Box>
     );
+  }
+
+  if (activeSection === 'clients') {
+    return <ListeClients />;
+  }
+
+  if (activeSection === 'articles') {
+    return <ListeArticles />;
+  }
+
+  if (activeSection === 'fournisseurs') {
+    return <ListeFournisseurs />;
+  }
+
+  if (activeSection === 'stock') {
+    return <ListeAchats />;
   }
 
   if (activeSection === 'finances') {

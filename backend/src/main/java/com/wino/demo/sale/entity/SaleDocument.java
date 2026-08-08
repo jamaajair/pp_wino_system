@@ -2,6 +2,7 @@ package com.wino.demo.sale.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wino.demo.customer.entity.Customer;
+import com.wino.demo.sale.exception.SaleDocumentConversionException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "sale_documents")
@@ -20,7 +23,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaleDocument {
-    
+
+    /**
+     * Statuts terminaux : le document est mort, plus aucun autre n'en découle.
+     * PAID, SHIPPED ou DELIVERED n'en font pas partie — facturer un bon de livraison
+     * déjà livré est au contraire le flux normal.
+     */
+    private static final Set<SaleDocumentStatus> NON_CONVERTIBLE_STATUSES = EnumSet.of(
+            SaleDocumentStatus.CANCELLED,
+            SaleDocumentStatus.REJECTED,
+            SaleDocumentStatus.EXPIRED,
+            SaleDocumentStatus.REFUNDED);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -131,17 +145,22 @@ public class SaleDocument {
      * Convertir le document en un autre type
      * Par exemple: QUOTE -> ORDER -> DELIVERY_NOTE -> INVOICE
      */
-    public SaleDocument convertTo(SaleDocument original, SaleDocumentType newType) {
-        if (!canConvertTo(original, newType)) {
-            throw new IllegalStateException("Conversion " + this.type + " vers " + newType + " interdite");
+    public SaleDocument convertTo(SaleDocumentType newType) {
+        if (NON_CONVERTIBLE_STATUSES.contains(this.status)) {
+            throw new SaleDocumentConversionException("Le document " + this.documentNumber + " est au statut "
+                    + this.status + " : il ne peut plus être converti.");
+        }
+        if (!canConvertTo(newType)) {
+            throw new SaleDocumentConversionException("Conversion de " + this.documentNumber + " (" + this.type
+                    + ") vers " + newType + " impossible : déjà effectuée ou non autorisée.");
         }
 
         setConvertedFlag(newType);
         SaleDocument newDocument = new SaleDocument();
         newDocument.setType(newType);
-        if (this.convertedFromDocumentNumber != null) {
-            newDocument.setConvertedFromDocumentNumber(this.documentNumber);
-        }
+        // Le nouveau document pointe toujours vers celui dont il est issu,
+        // que la source soit un document d'origine ou déjà le fruit d'une conversion.
+        newDocument.setConvertedFromDocumentNumber(this.documentNumber);
         newDocument.setCustomer(this.customer);
         newDocument.setDocumentDate(LocalDate.now());
         newDocument.setDueDate(LocalDate.now().plusDays(30));
@@ -162,17 +181,28 @@ public class SaleDocument {
         return newDocument;
     }
 
-    public boolean canConvertTo(SaleDocument original, SaleDocumentType newType) {
+    public boolean canConvertTo(SaleDocumentType newType) {
+        if (NON_CONVERTIBLE_STATUSES.contains(this.status)) {
+            return false;
+        }
         return switch (this.type) {
-            case QUOTE -> (newType == SaleDocumentType.ORDER && !original.convertedQuoteToOrder)
-                    || (newType == SaleDocumentType.DELIVERY_NOTE && !original.convertedQuoteToDeliveryNote)
-                    || (newType == SaleDocumentType.INVOICE && !original.convertedQuoteToInvoice);
-            case ORDER -> (newType == SaleDocumentType.DELIVERY_NOTE && !original.convertedOrderToDeliveryNote)
-                    || (newType == SaleDocumentType.INVOICE && !original.convertedOrderToInvoice);
-            case DELIVERY_NOTE -> (newType == SaleDocumentType.INVOICE && !original.convertedDeliveryNoteToInvoice);
-            case INVOICE -> false;
-            case CREDIT_NOTE -> false;
+            case QUOTE -> (newType == SaleDocumentType.ORDER && !alreadyConverted(convertedQuoteToOrder))
+                    || (newType == SaleDocumentType.DELIVERY_NOTE && !alreadyConverted(convertedQuoteToDeliveryNote))
+                    || (newType == SaleDocumentType.INVOICE && !alreadyConverted(convertedQuoteToInvoice));
+            case ORDER -> (newType == SaleDocumentType.DELIVERY_NOTE && !alreadyConverted(convertedOrderToDeliveryNote))
+                    || (newType == SaleDocumentType.INVOICE && !alreadyConverted(convertedOrderToInvoice));
+            case DELIVERY_NOTE -> (newType == SaleDocumentType.INVOICE && !alreadyConverted(convertedDeliveryNoteToInvoice));
+            case INVOICE, CREDIT_NOTE -> false;
         };
+    }
+
+    /**
+     * Les colonnes converted_* ont été ajoutées après coup par ddl-auto=update : elles sont
+     * nullables, et valent NULL sur toute ligne insérée sans les mentionner (cf. sample-data.sql).
+     * Déboxer directement un Boolean à null lèverait une NullPointerException.
+     */
+    private static boolean alreadyConverted(Boolean flag) {
+        return Boolean.TRUE.equals(flag);
     }
 
     public void setConvertedFlag(SaleDocumentType newType) {

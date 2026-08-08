@@ -17,6 +17,14 @@ export interface Product {
   qteColis: number;
   stockQuantity: number;
   purchasePrice: number;
+  // Champs déjà renvoyés par GET /api/products mais qui n'étaient pas déclarés ici.
+  // Optionnels pour ne rien casser chez les consommateurs existants.
+  code?: string;
+  barcode?: string;
+  minStockLevel?: number;
+  maxStockLevel?: number;
+  active?: boolean;
+  category?: Category;
 }
 
 export interface CartItem {
@@ -132,6 +140,7 @@ export interface PurchaseLineRequest {
 export interface PurchaseDocumentRequest {
   type: PurchaseDocumentType;
   supplier: { id: number };
+  supplierInvoiceNumber?: string;
   documentDate?: string;
   dueDate?: string;
   notes?: string;
@@ -139,9 +148,18 @@ export interface PurchaseDocumentRequest {
   lines: PurchaseLineRequest[];
 }
 
+export interface PurchaseDocumentLineResponse {
+  id?: number;
+  product?: Product;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
 export interface PurchaseDocumentResponse {
   id: number;
   documentNumber: string;
+  supplierInvoiceNumber?: string;
   type: PurchaseDocumentType;
   documentDate: string;
   dueDate?: string;
@@ -149,6 +167,39 @@ export interface PurchaseDocumentResponse {
   status?: string;
   stockUpdated?: boolean;
   totalAmount?: number;
+  // Déjà renvoyés par GET /api/purchase-documents (supplier est un @ManyToOne sérialisé,
+  // lines porte @JsonManagedReference) mais qui n'étaient pas déclarés ici.
+  supplier?: Supplier;
+  lines?: PurchaseDocumentLineResponse[];
+}
+
+
+export type MovementType = 'IN' | 'OUT' | 'ADJUSTMENT';
+
+export interface StockMovement {
+  id: number;
+  product?: Product;
+  type: MovementType;
+  quantity: number;
+  reason?: string;
+  referenceDocument?: string;
+  createdAt: string;
+}
+
+// POST /api/stock-movements/out attend ces clés à plat (le contrôleur lit une Map).
+export interface StockOutRequest {
+  productId: number;
+  quantity: number;
+  reason?: string;
+  reference?: string;
+}
+
+// POST /api/stock-movements/adjust — n'accepte pas de référence, et la quantité
+// doit être strictement positive : un ADJUSTMENT ne fait qu'augmenter le stock.
+export interface StockAdjustRequest {
+  productId: number;
+  quantity: number;
+  reason?: string;
 }
 
 

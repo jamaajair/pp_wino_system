@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Chip, CircularProgress,
   IconButton, Tooltip, Drawer, Divider,
-  Button,  Menu, MenuItem
+  Button,  Menu, MenuItem, Snackbar, Alert
 } from '@mui/material';
 import { KeyboardArrowUp } from "@mui/icons-material";
 import { Eye, X } from 'lucide-react';
+import axios from 'axios';
 import type { SaleDocumentResponse, DocumentType } from '../../../types';
 import { saleDocumentService } from '../../../services/saleDocumentService';
 import AppTabs from '../UsefeulComponents/Tabs';
@@ -52,6 +53,15 @@ const TABS = [
 
 type TabValue = typeof TABS[number]['value'];
 
+function conversionErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const detail = error.response?.data?.error ?? error.response?.data?.message;
+    if (typeof detail === 'string' && detail.length > 0) return detail;
+    if (error.response?.status === 409) return 'Cette conversion a déjà été effectuée.';
+  }
+  return 'La conversion a échoué.';
+}
+
 
 
 function ListeVentes() {
@@ -59,30 +69,45 @@ function ListeVentes() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabValue>('ALL');
   const [selectedDoc, setSelectedDoc] = useState<SaleDocumentResponse | null>(null);
+  const [converting, setConverting] = useState(false);
+  const [feedback, setFeedback] = useState<{ severity: 'success' | 'error'; text: string } | null>(null);
 
-  useEffect(() => {
-    saleDocumentService.getAll()
-      .then(setDocuments)
-      .catch(() => setDocuments([]))
-      .finally(() => setLoading(false));
+  const loadDocuments = useCallback(async () => {
+    setLoading(true);
+    try {
+      setDocuments(await saleDocumentService.getAll());
+    } catch {
+      setDocuments([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { loadDocuments(); }, [loadDocuments]);
 
   const filtered = activeTab === 'ALL'
     ? documents
     : documents.filter(d => d.type === activeTab);
 
-  const handleQuoteToOrder = () => {
-    console.log("Passons à l'action");
-    try{
-      const data = saleDocumentService.convertDocument(selectedDoc!.documentNumber, "INVOICE");
-      console.log('Document converti :', data);
+  const handleConvert = async (targetType: DocumentType) => {
+    if (!selectedDoc) return;
+    const source = selectedDoc.documentNumber;
+    setConverting(true);
+    try {
+      const created = await saleDocumentService.convertDocument(source, targetType);
+      // La conversion crée un nouveau document : sans rechargement la liste reste périmée
+      await loadDocuments();
+      setSelectedDoc(null);
+      setFeedback({
+        severity: 'success',
+        text: `${source} converti en ${TYPE_LABELS[targetType].toLowerCase()} ${created.documentNumber}.`,
+      });
     } catch (error) {
-      console.error('Erreur lors de la conversion :', error);
+      setFeedback({ severity: 'error', text: conversionErrorMessage(error) });
+    } finally {
+      setConverting(false);
     }
-  }
-
-  const handleQuoteToDelivery = () => {}
-  const handleQuoteToInvoice = () => {}
+  };
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -211,8 +236,8 @@ function ListeVentes() {
                     size="small"
                     color="primary"
                     onClick={handleOpen}
-                    endIcon={<KeyboardArrowUp />}
-                    
+                    disabled={converting}
+                    endIcon={converting ? <CircularProgress size={14} color="inherit" /> : <KeyboardArrowUp />}
                   >
                     Convertir
                   </Button>
@@ -224,13 +249,13 @@ function ListeVentes() {
                     anchorOrigin={{ vertical: "top", horizontal: "left" }}
                     transformOrigin={{ vertical: "bottom", horizontal: "left" }}
                   >
-                    <MenuItem onClick={() => { handleQuoteToOrder(); handleClose(); }}>
+                    <MenuItem onClick={() => { handleConvert('ORDER'); handleClose(); }}>
                       En Commande
                     </MenuItem>
-                    <MenuItem onClick={() => { handleQuoteToDelivery(); handleClose(); }}>
+                    <MenuItem onClick={() => { handleConvert('DELIVERY_NOTE'); handleClose(); }}>
                       En Note d'envoi
                     </MenuItem>
-                    <MenuItem onClick={() => { handleQuoteToInvoice(); handleClose(); }}>
+                    <MenuItem onClick={() => { handleConvert('INVOICE'); handleClose(); }}>
                       En Facture
                     </MenuItem>
                   </Menu>
@@ -291,6 +316,19 @@ function ListeVentes() {
           </Box>
         )}
       </Drawer>
+
+      <Snackbar
+        open={feedback !== null}
+        autoHideDuration={5000}
+        onClose={() => setFeedback(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        {feedback ? (
+          <Alert severity={feedback.severity} onClose={() => setFeedback(null)}>
+            {feedback.text}
+          </Alert>
+        ) : undefined}
+      </Snackbar>
     </Box>
   );
 }
