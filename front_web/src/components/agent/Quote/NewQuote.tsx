@@ -1,4 +1,4 @@
-import { Box, Fade, Alert, Snackbar} from '@mui/material';
+import { Box, Fade } from '@mui/material';
 import { useState } from 'react';
 import type { Customer, Product } from '../../../types';
 import QuoteHeader from './QuoteHeader';

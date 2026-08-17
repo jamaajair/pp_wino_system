@@ -13,11 +13,10 @@ import {
   Snackbar,
 } from '@mui/material';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
-import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
-import type { Customer, Product, SaleDocumentRequest } from '../../../types';
+import type { Customer, Product } from '../../../types';
 import { customerService } from '../../../services/customerService';
 import { productService } from '../../../services/productService';
 

@@ -70,7 +70,7 @@ function ListeVentes() {
   const [activeTab, setActiveTab] = useState<TabValue>('ALL');
   const [selectedDoc, setSelectedDoc] = useState<SaleDocumentResponse | null>(null);
   const [converting, setConverting] = useState(false);
-  const [feedback, setFeedback] = useState<{ severity: 'success' | 'error'; text: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ severity: 'success' | 'warning' | 'error'; text: string } | null>(null);
 
   const loadDocuments = useCallback(async () => {
     setLoading(true);
@@ -94,14 +94,16 @@ function ListeVentes() {
     const source = selectedDoc.documentNumber;
     setConverting(true);
     try {
-      const created = await saleDocumentService.convertDocument(source, targetType);
+      const result = await saleDocumentService.convertDocument(source, targetType);
       // La conversion crée un nouveau document : sans rechargement la liste reste périmée
       await loadDocuments();
       setSelectedDoc(null);
-      setFeedback({
-        severity: 'success',
-        text: `${source} converti en ${TYPE_LABELS[targetType].toLowerCase()} ${created.documentNumber}.`,
-      });
+
+      const base = `${source} converti en ${TYPE_LABELS[targetType].toLowerCase()} ${result.document.documentNumber}.`;
+      // Une rupture n'est pas un échec : le document existe, mais le stock n'a pas suivi.
+      setFeedback(result.stockWarnings.length > 0
+        ? { severity: 'warning', text: `${base} Stock insuffisant — ${result.stockWarnings.join(', ')}.` }
+        : { severity: 'success', text: base });
     } catch (error) {
       setFeedback({ severity: 'error', text: conversionErrorMessage(error) });
     } finally {

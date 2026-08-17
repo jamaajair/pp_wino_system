@@ -2,6 +2,8 @@ package com.wino.demo.sale.service;
 
 import com.wino.demo.sale.dto.SaleDocumentDto;
 import com.wino.demo.sale.dto.SaleDocumentLineDto;
+import com.wino.demo.sale.dto.SaleDocumentResult;
+import com.wino.demo.stock.service.StockMovementService;
 import com.wino.demo.sale.entity.SaleDocument;
 import com.wino.demo.sale.entity.SaleDocumentLine;
 import com.wino.demo.sale.entity.SaleDocumentStatus;
@@ -30,13 +32,48 @@ public class SaleDocumentService {
     private final SaleDocumentRepository saleDocumentRepository;
     private final CustomerService customerService;
     private final ProductService productService;
-    
+    private final StockMovementService stockMovementService;
+
     public SaleDocumentService(SaleDocumentRepository saleDocumentRepository,
                               CustomerService customerService,
-                              ProductService productService) {
+                              ProductService productService,
+                              StockMovementService stockMovementService) {
         this.saleDocumentRepository = saleDocumentRepository;
         this.customerService = customerService;
         this.productService = productService;
+        this.stockMovementService = stockMovementService;
+    }
+
+    /**
+     * Sort du stock la marchandise d'un document de vente.
+     *
+     * Seuls la facture et le bon de livraison mouvementent le stock : un devis ou une
+     * commande ne sont que des engagements, la marchandise n'a pas quitté l'entrepôt.
+     *
+     * @return la liste des ruptures constatées, vide si tout était disponible
+     */
+    private List<String> applyStockOut(SaleDocument document) {
+        if (document.getType() != SaleDocumentType.INVOICE
+                && document.getType() != SaleDocumentType.DELIVERY_NOTE) {
+            return List.of();
+        }
+
+        List<String> shortages = new ArrayList<>();
+        for (SaleDocumentLine line : document.getLines()) {
+            int requested = line.getQuantity() == null ? 0 : line.getQuantity().intValue();
+            if (requested <= 0) {
+                continue;
+            }
+            int missing = stockMovementService.stockOutForSale(
+                    line.getProduct().getId(),
+                    requested,
+                    "Vente " + document.getDocumentNumber(),
+                    document.getDocumentNumber());
+            if (missing > 0) {
+                shortages.add(line.getProduct().getName() + " : " + missing + " manquant(s)");
+            }
+        }
+        return shortages;
     }
     
     /**
@@ -73,7 +110,7 @@ public class SaleDocumentService {
     /**
     * Créer un nouveau document Validated By Jamaa
     */
-    public SaleDocument createSaleDocument(SaleDocumentDto request) {
+    public SaleDocumentResult createSaleDocument(SaleDocumentDto request) {
         SaleDocument doc = new SaleDocument();
         doc.setType(request.type());
         doc.setDocumentNumber(generateDocumentNumber(request.type()));
@@ -108,41 +145,16 @@ public class SaleDocumentService {
         doc.calculateTotalAmount();
         saleDocumentRepository.save(doc);
 
-        return doc;
+        return new SaleDocumentResult(createSaleDocumentDto(doc), applyStockOut(doc));
     }
 
     // /**
     //  * Récupérer tous les documents
     //  */
     public List<SaleDocumentDto> getAllSaleDocuments() {
-        List<SaleDocument> saleDocuments = saleDocumentRepository.findAll();
-        List<SaleDocumentDto> dtos = new ArrayList<>();
-        
-        for (SaleDocument doc : saleDocuments) {
-            SaleDocumentDto dto = new SaleDocumentDto(
-                doc.getDocumentNumber(),
-                doc.getType(),
-                doc.getCustomer().getId(),
-                doc.getDocumentDate().toString(),
-                doc.getDueDate() != null ? doc.getDueDate().toString() : null,
-                doc.getNotes(),
-                doc.getStatus() != null ? doc.getStatus() : null,
-                doc.getLines().stream().map(line -> new SaleDocumentLineDto(
-                    line.getProduct().getId(),
-                    line.getProduct().getName(),
-                    line.getProduct().getDescription(),
-                    line.getQuantity(),
-                    line.getUnitPrice(),
-                    line.getLineTotal()
-                )).collect(Collectors.toList()),
-                doc.getCreatedAt().toString(),
-                doc.getUpdatedAt().toString(),
-                doc.getConvertedFromDocumentNumber()
-            );
-            dtos.add(dto);
-            System.out.println("Document ID: " + doc.getId() + ", Type: " + doc.getType() + ", Customer: " + doc.getCustomer().getName());
-        }
-        return dtos;
+        return saleDocumentRepository.findAll().stream()
+                .map(this::createSaleDocumentDto)
+                .collect(Collectors.toList());
     }
     
     // /**
@@ -204,12 +216,20 @@ public class SaleDocumentService {
     /**
      * Convertir un document en un autre type
      */
-    public SaleDocument convertDocument(String documentNumber, SaleDocumentType newType) {
+    public SaleDocumentResult convertDocument(String documentNumber, SaleDocumentType newType) {
         SaleDocument original = saleDocumentRepository.findByDocumentNumber(documentNumber)
                 .orElseThrow(() -> new SaleDocumentNotFoundException(documentNumber));
         SaleDocument newDoc = original.convertTo(newType);
         newDoc.setDocumentNumber(generateDocumentNumber(newType));
-        return saleDocumentRepository.save(newDoc);
+        saleDocumentRepository.save(newDoc);
+
+        // La marchandise d'un bon de livraison a déjà quitté le stock : la facture
+        // qui en découle ne doit pas la décompter une seconde fois.
+        List<String> shortages = original.getType() == SaleDocumentType.DELIVERY_NOTE
+                ? List.of()
+                : applyStockOut(newDoc);
+
+        return new SaleDocumentResult(createSaleDocumentDto(newDoc), shortages);
     }
 
     public SaleDocumentDto createSaleDocumentDto(SaleDocument document) {

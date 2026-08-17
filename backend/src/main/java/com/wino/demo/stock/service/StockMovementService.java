@@ -3,6 +3,7 @@ package com.wino.demo.stock.service;
 import com.wino.demo.stock.entity.MovementType;
 import com.wino.demo.stock.entity.StockMovement;
 import com.wino.demo.stock.repository.StockMovementRepository;
+import com.wino.demo.products.entity.Product;
 import com.wino.demo.products.service.ProductService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,6 +123,38 @@ public class StockMovementService {
         return createStockMovement(movement);
     }
     
+    /**
+     * Sortie liée à une vente : tolère un stock insuffisant au lieu d'échouer.
+     *
+     * Le stock descend au plus bas à zéro, jamais en négatif. Le mouvement enregistré
+     * porte la quantité réellement sortie, pas la quantité demandée : l'historique doit
+     * pouvoir être resommé pour retrouver le stock courant.
+     *
+     * @return la quantité manquante, 0 si tout a pu être sorti
+     */
+    public int stockOutForSale(Long productId, int quantity, String reason, String reference) {
+        Product product = productService.getProductById(productId);
+
+        int available = Math.max(product.getStockQuantity() == null ? 0 : product.getStockQuantity(), 0);
+        int applied = Math.min(quantity, available);
+        int shortage = quantity - applied;
+
+        // Rien de disponible : pas de mouvement à zéro, createStockMovement le refuserait.
+        if (applied > 0) {
+            StockMovement movement = new StockMovement();
+            movement.setProduct(product);
+            movement.setType(MovementType.OUT);
+            movement.setQuantity(applied);
+            movement.setReason(shortage > 0
+                    ? reason + " (rupture : " + shortage + " non décomptés)"
+                    : reason);
+            movement.setReferenceDocument(reference);
+            createStockMovement(movement);
+        }
+
+        return shortage;
+    }
+
     /**
      * Ajustement de stock
      */

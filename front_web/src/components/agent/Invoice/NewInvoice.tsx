@@ -1,4 +1,4 @@
-import { Box, Fade, Alert, Snackbar} from '@mui/material';
+import { Alert, AlertTitle, Box, Fade, Snackbar, Typography } from '@mui/material';
 import { useState } from 'react';
 import type { Customer, Product } from '../../../types';
 import InvoiceHeader from './InvoiceHeader';
@@ -24,6 +24,7 @@ function NewInvoice({currentTask, setCurrentTask, onClose: _onClose }: NewInvoic
   const [isVisible, setIsVisible] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isValid, setIsValid] = useState(false);
+  const [stockWarnings, setStockWarnings] = useState<string[]>([]);
 
 
   const handleCancel = () => setIsVisible(false);
@@ -65,11 +66,13 @@ function NewInvoice({currentTask, setCurrentTask, onClose: _onClose }: NewInvoic
           quantity: i.qty,
         }))
       };
-      const doc = await productService.createSaleDocument(payload);
+      const result = await productService.createSaleDocument(payload);
+      // Une facture sort la marchandise du stock : on signale ce qui n'a pas pu être décompté.
+      setStockWarnings(result.stockWarnings ?? []);
       setIsValid(true);
-      console.log('Document créé :', doc);
     } catch (error) {
       console.error('Erreur création facture', error);
+      setError("Erreur lors de la création de la facture.");
     }
   };
 
@@ -111,18 +114,20 @@ function NewInvoice({currentTask, setCurrentTask, onClose: _onClose }: NewInvoic
         </Box>
       </Fade>
     )}
-    {/*{isValid && (
+    {isValid && stockWarnings.length > 0 && (
       <Snackbar
-        open={isValid}
-        autoHideDuration={3500}
-        onClose={() => setIsValid(false)}
+        open
+        onClose={() => setStockWarnings([])}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
-        <Alert severity="success" onClose={() => setIsValid(false)}>
-          La facture a été créée avec succès.
+        <Alert severity="warning" onClose={() => setStockWarnings([])}>
+          <AlertTitle>Facture créée, mais stock insuffisant</AlertTitle>
+          {stockWarnings.map((w, i) => (
+            <Typography key={i} fontSize="0.85rem">• {w}</Typography>
+          ))}
         </Alert>
       </Snackbar>
-    )}*/}
+    )}
     </>
   );
 }

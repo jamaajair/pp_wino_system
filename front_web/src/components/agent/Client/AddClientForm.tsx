@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Alert, Box, Button, Chip, MenuItem, Paper,
+  Alert, Box, Button, Chip, Paper,
   TextField, Typography,
 } from '@mui/material';
 import { User, Building2, Phone, Mail, MapPin, CreditCard, Hash } from 'lucide-react';

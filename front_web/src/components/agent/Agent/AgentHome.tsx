@@ -19,6 +19,7 @@ import SearchArticle from '../Articles/SearchArticle';
 import AddSupplierForm from '../Supplier/AddSupplierForm';
 import StockIn from '../stock/Stock';
 import StockOut from '../stock/StockOut';
+import MouvementsStock from '../stock/MouvementsStock';
 import Finances from '../Finance/Finances';
 import NewTransaction from '../Finance/NewTransaction';
 import Dashboard from '../Dashboard/Dashboard';
@@ -132,6 +133,10 @@ function AgentHome({ currentTask, setCurrentTask, activeSection, onClientCreated
 
     if (currentTask === 'stock-out') {
       return <StockOut />;
+    }
+
+    if (currentTask === 'stock-history') {
+      return <MouvementsStock />;
     }
 
     if (currentTask === 'search-article') {

@@ -114,6 +114,13 @@ export type SaleDocumentStatus =
     | 'PAID' | 'PARTIALLY_PAID' | 'OVERDUE' | 'REFUNDED';  
 
 
+// Réponse des POST /api/sale-documents et /convert : le document créé, plus les
+// ruptures de stock constatées. Une rupture n'empêche pas la création.
+export interface SaleDocumentResult {
+  document: SaleDocumentResponse;
+  stockWarnings: string[];
+}
+
 export interface SaleDocumentResponse {
   documentNumber: string;
   type: DocumentType;

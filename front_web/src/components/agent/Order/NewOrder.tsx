@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Box, Fade, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Box, Fade } from '@mui/material';
 import OrderHeader from './OrderHeader';
 import type { Customer, Product } from '../../../types';
 import OrderLines from './OrderLines';
@@ -50,7 +50,7 @@ function NewOrder({currentTask, setCurrentTask, onClose: _onClose }: NewOrderPro
 
     try {
           const payload = {
-            type: 'QUOTE' as const,
+            type: 'ORDER' as const,
             customerId: customer?.id ?? 0,
             lines: items.map(i => ({
               productId: i.product.id,

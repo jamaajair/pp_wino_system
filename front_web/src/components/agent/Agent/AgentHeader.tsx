@@ -39,6 +39,7 @@ function getHeaderButtons(section: SectionKey | null, setCurrentTask?: (action: 
     stock: [
       { label: '+ Entrée Stock',  onClick: () => setCurrentTask('stock-in') },
       { label: '+ Sortie Stock',  onClick: () => setCurrentTask('stock-out') },
+      { label: 'Historique',      onClick: () => setCurrentTask('stock-history') },
     ],
     finances: [
       { label: '+ Nouvelle Transaction', onClick: () => setCurrentTask('new-transaction') },

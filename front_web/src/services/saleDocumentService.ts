@@ -1,5 +1,5 @@
 import api from '../api/axios';
-import type { SaleDocumentResponse, SaleDocumentRequest } from '../types';
+import type { SaleDocumentResponse, SaleDocumentRequest, SaleDocumentResult } from '../types';
 
 export const saleDocumentService = {
   getAll: async (): Promise<SaleDocumentResponse[]> => {
@@ -8,13 +8,14 @@ export const saleDocumentService = {
     return response.data;
   },
 
-  create: async (request: SaleDocumentRequest): Promise<SaleDocumentResponse> => {
-    const response = await api.post<SaleDocumentResponse>('/api/sale-documents/all', request);
+  create: async (request: SaleDocumentRequest): Promise<SaleDocumentResult> => {
+    const response = await api.post<SaleDocumentResult>('/api/sale-documents', request);
     return response.data;
   },
 
-  convertDocument: async (documentNumber: string, targetType: string): Promise<SaleDocumentResponse> => {
-    const response = await api.post<SaleDocumentResponse>(`/api/sale-documents/convert?documentNumber=${documentNumber}&targetType=${targetType}`);
+  convertDocument: async (documentNumber: string, targetType: string): Promise<SaleDocumentResult> => {
+    const response = await api.post<SaleDocumentResult>(
+      `/api/sale-documents/convert?documentNumber=${encodeURIComponent(documentNumber)}&targetType=${targetType}`);
     return response.data;
   },
 };
