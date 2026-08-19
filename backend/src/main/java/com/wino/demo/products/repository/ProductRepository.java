@@ -12,23 +12,17 @@ import java.util.Optional;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     
-    // Recherche par code produit
     Optional<Product> findByCode(String code);
     
-    // Vérifier si un code existe
     boolean existsByCode(String code);
     
-    // Produits actifs uniquement
     List<Product> findByActiveTrue();
     
-    // Produits par catégorie
     List<Product> findByCategoryId(Long categoryId);
     
-    // Produits en stock faible
     @Query("SELECT p FROM Product p WHERE p.stockQuantity <= p.minStockLevel")
     List<Product> findLowStockProducts();
     
-    // Recherche par nom
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Product> searchByName(@Param("keyword") String keyword);
 }

@@ -12,31 +12,22 @@ import java.util.Optional;
 @Repository
 public interface SupplierRepository extends JpaRepository<Supplier, Long> {
     
-    // Recherche par code
     Optional<Supplier> findByCode(String code);
     
-    // Recherche par email
     Optional<Supplier> findByEmail(String email);
     
-    // Vérifier si code existe
     boolean existsByCode(String code);
     
-    // Vérifier si email existe
     boolean existsByEmail(String email);
     
-    // Fournisseurs actifs uniquement
     List<Supplier> findByActiveTrue();
     
-    // Fournisseurs par ville
     List<Supplier> findByCity(String city);
     
-    // Fournisseurs par pays
     List<Supplier> findByCountry(String country);
     
-    // Recherche par nom, email ou code
     @Query("SELECT s FROM Supplier s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(s.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(s.code) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Supplier> searchSuppliers(@Param("keyword") String keyword);
     
-    // Fournisseurs avec un certain délai de paiement
     List<Supplier> findByPaymentTerms(Integer paymentTerms);
 }

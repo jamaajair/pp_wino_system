@@ -51,10 +51,10 @@ public class FinancialTransaction {
     private String description;
     
     @Column(length = 100)
-    private String reference; // Référence externe (facture, paiement, etc.)
+    private String reference; 
     
     @Column(length = 100)
-    private String category; // Catégorie de transaction (vente, achat, salaire, etc.)
+    private String category; 
     
     @Column(nullable = false)
     private Boolean applied = false;

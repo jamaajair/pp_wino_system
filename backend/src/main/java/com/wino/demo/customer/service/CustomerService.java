@@ -20,39 +20,29 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
     
-    /**
-     * Récupérer tous les clients
-     */
+
     public List<Customer> getAllCustomers() {
         return customerRepository.findAll();
     }
     
-    /**
-     * Récupérer les clients actifs
-     */
+
     public List<Customer> getActiveCustomers() {
         return customerRepository.findByActiveTrue();
     }
     
-    /**
-     * Récupérer un client par ID
-     */
+
     public Customer getCustomerById(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé avec l'ID: " + id));
     }
     
-    /**
-     * Récupérer un client par code
-     */
+
     public Customer getCustomerByCode(String code) {
         return customerRepository.findByCode(code)
                 .orElseThrow(() -> new RuntimeException("Client non trouvé avec le code: " + code));
     }
     
-    /**
-     * Créer un nouveau client
-     */
+
     public Customer createCustomer(Customer customer) {
         // Vérifier que le code n'existe pas déjà
         if (customerRepository.existsByCode(customer.getCode())) {
@@ -75,9 +65,7 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
     
-    /**
-     * Mettre à jour un client
-     */
+
     public Customer updateCustomer(Long id, Customer customerDetails) {
         Customer customer = getCustomerById(id);
         
@@ -111,17 +99,12 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
     
-    /**
-     * Supprimer un client
-     */
+
     public void deleteCustomer(Long id) {
         Customer customer = getCustomerById(id);
         customerRepository.delete(customer);
     }
     
-    /**
-     * Désactiver un client
-     */
     public Customer deactivateCustomer(Long id) {
         Customer customer = getCustomerById(id);
         customer.setActive(false);
@@ -129,9 +112,7 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
     
-    /**
-     * Activer un client
-     */
+
     public Customer activateCustomer(Long id) {
         Customer customer = getCustomerById(id);
         customer.setActive(true);
@@ -139,44 +120,31 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
     
-    /**
-     * Clients par type
-     */
+
     public List<Customer> getCustomersByType(CustomerType customerType) {
         return customerRepository.findByCustomerType(customerType);
     }
     
-    /**
-     * Clients avec des dettes
-     */
+
     public List<Customer> getCustomersWithDebt() {
         return customerRepository.findCustomersWithDebt();
     }
     
-    /**
-     * Clients qui dépassent leur limite de crédit
-     */
+
     public List<Customer> getCustomersExceedingCreditLimit() {
         return customerRepository.findCustomersExceedingCreditLimit();
     }
     
-    /**
-     * Rechercher des clients
-     */
+
     public List<Customer> searchCustomers(String keyword) {
         return customerRepository.searchCustomers(keyword);
     }
     
-    /**
-     * Clients par ville
-     */
+
     public List<Customer> getCustomersByCity(String city) {
         return customerRepository.findByCity(city);
     }
     
-    /**
-     * Mettre à jour le solde d'un client
-     */
     public Customer updateBalance(Long id, BigDecimal amount) {
         Customer customer = getCustomerById(id);
         customer.setBalance(customer.getBalance().add(amount));

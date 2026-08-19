@@ -20,3 +20,5 @@ npm-debug.log*
 
 # OS / editor
 .DS_Store
+report.tex
+report_full.tex

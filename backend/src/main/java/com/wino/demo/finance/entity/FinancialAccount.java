@@ -73,28 +73,20 @@ public class FinancialAccount {
         updatedAt = LocalDateTime.now();
     }
     
-    /**
-     * Mettre à jour le solde du compte
-     */
     public void updateBalance(BigDecimal amount, TransactionType transactionType) {
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Le montant doit être positif");
         }
         
         if (transactionType == TransactionType.CREDIT) {
-            // Crédit = ajout d'argent
             this.balance = this.balance.add(amount);
         } else if (transactionType == TransactionType.DEBIT) {
-            // Débit = retrait d'argent
             this.balance = this.balance.subtract(amount);
         }
         
         this.updatedAt = LocalDateTime.now();
     }
     
-    /**
-     * Vérifier si le solde est suffisant pour un débit
-     */
     public boolean hasSufficientBalance(BigDecimal amount) {
         return this.balance.compareTo(amount) >= 0;
     }

@@ -29,10 +29,7 @@ public class PurchaseDocumentService {
         this.supplierService = supplierService;
         this.stockMovementService = stockMovementService;
     }
-    
-    /**
-     * Générer un numéro de document unique
-     */
+
     private String generateDocumentNumber(PurchaseDocumentType type) {
         String prefix = switch (type) {
             case REQUEST -> "REQ";
@@ -46,33 +43,22 @@ public class PurchaseDocumentService {
         
         return String.format("%s%s-%04d", prefix, date, count + 1);
     }
-    
-    /**
-     * Récupérer tous les documents
-     */
+
     public List<PurchaseDocument> getAllPurchaseDocuments() {
         return purchaseDocumentRepository.findAll();
     }
-    
-    /**
-     * Récupérer un document par ID
-     */
+
     public PurchaseDocument getPurchaseDocumentById(Long id) {
         return purchaseDocumentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Document d'achat non trouvé avec l'ID: " + id));
     }
-    
-    /**
-     * Récupérer un document par numéro
-     */
+
     public PurchaseDocument getPurchaseDocumentByDocumentNumber(String documentNumber) {
         return purchaseDocumentRepository.findByDocumentNumber(documentNumber)
                 .orElseThrow(() -> new RuntimeException("Document non trouvé avec le numéro: " + documentNumber));
     }
     
-    /**
-     * Créer un nouveau document
-     */
+
     public PurchaseDocument createPurchaseDocument(PurchaseDocument purchaseDocument) {
         // Générer le numéro de document
         purchaseDocument.setDocumentNumber(generateDocumentNumber(purchaseDocument.getType()));
@@ -100,10 +86,7 @@ public class PurchaseDocumentService {
         
         return purchaseDocumentRepository.save(purchaseDocument);
     }
-    
-    /**
-     * Mettre à jour un document
-     */
+
     public PurchaseDocument updatePurchaseDocument(Long id, PurchaseDocument documentDetails) {
         PurchaseDocument purchaseDocument = getPurchaseDocumentById(id);
         
@@ -127,9 +110,6 @@ public class PurchaseDocumentService {
         return purchaseDocumentRepository.save(purchaseDocument);
     }
     
-    /**
-     * Supprimer un document
-     */
     public void deletePurchaseDocument(Long id) {
         PurchaseDocument purchaseDocument = getPurchaseDocumentById(id);
         
@@ -145,10 +125,7 @@ public class PurchaseDocumentService {
         
         purchaseDocumentRepository.delete(purchaseDocument);
     }
-    
-    /**
-     * Mettre à jour le stock depuis un document
-     */
+
     public PurchaseDocument updateStockFromDocument(Long id) {
         PurchaseDocument purchaseDocument = getPurchaseDocumentById(id);
         
@@ -161,10 +138,7 @@ public class PurchaseDocumentService {
         // Sauvegarder le document
         return purchaseDocumentRepository.save(purchaseDocument);
     }
-    
-    /**
-     * Changer le statut
-     */
+
     public PurchaseDocument changeStatus(Long id, String newStatus) {
         PurchaseDocument purchaseDocument = getPurchaseDocumentById(id);
         purchaseDocument.setStatus(newStatus);
@@ -173,51 +147,30 @@ public class PurchaseDocumentService {
         return purchaseDocumentRepository.save(purchaseDocument);
     }
     
-    /**
-     * Documents par fournisseur
-     */
     public List<PurchaseDocument> getPurchaseDocumentsBySupplier(Long supplierId) {
         return purchaseDocumentRepository.findBySupplierId(supplierId);
     }
     
-    /**
-     * Documents par type
-     */
     public List<PurchaseDocument> getPurchaseDocumentsByType(PurchaseDocumentType type) {
         return purchaseDocumentRepository.findByType(type);
     }
-    
-    /**
-     * Documents par statut
-     */
+
     public List<PurchaseDocument> getPurchaseDocumentsByStatus(String status) {
         return purchaseDocumentRepository.findByStatus(status);
     }
-    
-    /**
-     * Documents avec stock non mis à jour
-     */
+
     public List<PurchaseDocument> getDocumentsWithStockNotUpdated() {
         return purchaseDocumentRepository.findByStockUpdatedFalse();
     }
     
-    /**
-     * Factures en retard
-     */
     public List<PurchaseDocument> getOverdueInvoices() {
         return purchaseDocumentRepository.findOverdueInvoices(LocalDate.now());
     }
     
-    /**
-     * Rechercher des documents
-     */
     public List<PurchaseDocument> searchPurchaseDocuments(String keyword) {
         return purchaseDocumentRepository.searchDocuments(keyword);
     }
     
-    /**
-     * Documents entre deux dates
-     */
     public List<PurchaseDocument> getPurchaseDocumentsByDateRange(LocalDate startDate, LocalDate endDate) {
         return purchaseDocumentRepository.findByDocumentDateBetween(startDate, endDate);
     }

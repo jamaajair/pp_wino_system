@@ -35,7 +35,6 @@ public class User {
     @Column(length = 20)
     private String phone;
 
-    // Lien optionnel vers une fiche client (table customers) pour les comptes de rôle CUSTOMER
     @Column(name = "customer_id")
     private Long customerId;
 

@@ -18,39 +18,28 @@ public class CategoryService {
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-    
-    /**
-     * Récupérer toutes les catégories
-     */
+
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
     
-    /**
-     * Récupérer les catégories racines uniquement
-     */
+
     public List<Category> getRootCategories() {
         return categoryRepository.findByParentCategoryIsNull();
     }
     
-    /**
-     * Récupérer une catégorie par ID
-     */
+
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Catégorie non trouvée avec l'ID: " + id));
     }
     
-    /**
-     * Créer une nouvelle catégorie
-     */
+
     public Category createCategory(Category category) {
-        // Vérifier que le nom n'existe pas déjà
         if (categoryRepository.existsByName(category.getName())) {
             throw new RuntimeException("Une catégorie avec ce nom existe déjà: " + category.getName());
         }
         
-        // Vérifier la référence circulaire parent
         if (category.getParentCategory() != null) {
             Category parent = getCategoryById(category.getParentCategory().getId());
             if (isCircularReference(parent, category)) {
@@ -63,13 +52,10 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
     
-    /**
-     * Mettre à jour une catégorie
-     */
+
     public Category updateCategory(Long id, Category categoryDetails) {
         Category category = getCategoryById(id);
         
-        // Vérifier unicité du nom si changé
         if (!category.getName().equals(categoryDetails.getName()) 
             && categoryRepository.existsByName(categoryDetails.getName())) {
             throw new RuntimeException("Une catégorie avec ce nom existe déjà");
@@ -78,7 +64,6 @@ public class CategoryService {
         category.setName(categoryDetails.getName());
         category.setDescription(categoryDetails.getDescription());
         
-        // Mise à jour du parent si fourni
         if (categoryDetails.getParentCategory() != null) {
             Category newParent = getCategoryById(categoryDetails.getParentCategory().getId());
             if (isCircularReference(newParent, category)) {
@@ -93,13 +78,11 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
     
-    /**
-     * Supprimer une catégorie
-     */
+
     public void deleteCategory(Long id) {
         Category category = getCategoryById(id);
         
-        // Empêcher la suppression si elle a des sous-catégories
+        // pas suppression si elle a des sous cat
         if (category.getSubCategories() != null && !category.getSubCategories().isEmpty()) {
             throw new RuntimeException("Impossible de supprimer une catégorie avec des sous-catégories");
         }
@@ -107,22 +90,19 @@ public class CategoryService {
         categoryRepository.delete(category);
     }
     
-    /**
-     * Récupérer les sous-catégories
-     */
+
     public List<Category> getSubCategories(Long parentId) {
         return categoryRepository.findByParentCategoryId(parentId);
     }
     
-    /**
-     * Rechercher des catégories par mot-clé
-     */
+
     public List<Category> searchCategories(String keyword) {
         return categoryRepository.searchByName(keyword);
     }
     
     /**
-     * Vérifier les références circulaires
+     * Vérifier les références circulaires 
+     * pour éviter qu'une catégorie devienne son propre parent ou ancêtre
      */
     private boolean isCircularReference(Category parent, Category child) {
         if (parent.getId().equals(child.getId())) {

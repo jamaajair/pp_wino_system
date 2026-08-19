@@ -20,10 +20,7 @@ public class ProductController {
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
-    
-    /**
-     * GET /api/products - Tous les produits
-     */
+
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts(
             @RequestParam(required = false) Long categoryId) {
@@ -34,49 +31,31 @@ public class ProductController {
         return ResponseEntity.ok(productService.getAllProducts());
     }
     
-    /**
-     * GET /api/products/active - Produits actifs
-     */
     @GetMapping("/active")
     public ResponseEntity<List<Product>> getActiveProducts() {
         return ResponseEntity.ok(productService.getActiveProducts());
     }
-    
-    /**
-     * GET /api/products/{id} - Un produit par ID
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
-    
-    /**
-     * GET /api/products/category/{categoryId} - Produits par catégorie
-     */
+
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
     }
-    
-    /**
-     * GET /api/products/low-stock - Produits en stock faible
-     */
+
     @GetMapping("/low-stock")
     public ResponseEntity<List<Product>> getLowStockProducts() {
         return ResponseEntity.ok(productService.getLowStockProducts());
     }
     
-    /**
-     * GET /api/products/search?keyword=... - Recherche
-     */
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
         return ResponseEntity.ok(productService.searchProducts(keyword));
     }
-    
-    /**
-     * POST /api/products - Créer un produit
-     */
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createProduct(@RequestBody Product product) {
         try {
@@ -93,10 +72,7 @@ public class ProductController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-    
-    /**
-     * PUT /api/products/{id} - Mettre à jour un produit
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateProduct(
             @PathVariable Long id, 
@@ -115,10 +91,7 @@ public class ProductController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-    
-    /**
-     * DELETE /api/products/{id} - Supprimer un produit
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteProduct(@PathVariable Long id) {
         try {

@@ -21,58 +21,37 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    
-    /**
-     * GET /api/users - Tous les utilisateurs
-     */
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
-    
-    /**
-     * GET /api/users/active - Utilisateurs actifs
-     */
+
     @GetMapping("/active")
     public ResponseEntity<List<User>> getActiveUsers() {
         return ResponseEntity.ok(userService.getActiveUsers());
     }
     
-    /**
-     * GET /api/users/{id} - Un utilisateur par ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
-    
-    /**
-     * GET /api/users/username/{username} - Un utilisateur par username
-     */
+
     @GetMapping("/username/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserByUsername(username));
     }
-    
-    /**
-     * GET /api/users/role/{role} - Utilisateurs par rôle
-     */
+
     @GetMapping("/role/{role}")
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable Role role) {
         return ResponseEntity.ok(userService.getUsersByRole(role));
     }
     
-    /**
-     * GET /api/users/search?keyword=... - Recherche
-     */
     @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(@RequestParam String keyword) {
         return ResponseEntity.ok(userService.searchUsers(keyword));
     }
-    
-    /**
-     * POST /api/users - Créer un utilisateur
-     */
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
         try {
@@ -90,9 +69,6 @@ public class UserController {
         }
     }
     
-    /**
-     * PUT /api/users/{id} - Mettre à jour un utilisateur
-     */
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(
             @PathVariable Long id, 
@@ -111,10 +87,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-    
-    /**
-     * DELETE /api/users/{id} - Supprimer un utilisateur
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Long id) {
         try {
@@ -131,9 +104,6 @@ public class UserController {
         }
     }
     
-    /**
-     * PATCH /api/users/{id}/deactivate - Désactiver un utilisateur
-     */
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<Map<String, Object>> deactivateUser(@PathVariable Long id) {
         try {
@@ -150,10 +120,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-    
-    /**
-     * PATCH /api/users/{id}/activate - Activer un utilisateur
-     */
+
     @PatchMapping("/{id}/activate")
     public ResponseEntity<Map<String, Object>> activateUser(@PathVariable Long id) {
         try {
@@ -171,9 +138,6 @@ public class UserController {
         }
     }
     
-    /**
-     * PATCH /api/users/{id}/password - Changer le mot de passe
-     */
     @PatchMapping("/{id}/password")
     public ResponseEntity<Map<String, Object>> changePassword(
             @PathVariable Long id, 

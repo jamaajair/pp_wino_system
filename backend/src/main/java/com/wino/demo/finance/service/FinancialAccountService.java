@@ -21,32 +21,23 @@ public class FinancialAccountService {
         this.financialAccountRepository = financialAccountRepository;
     }
     
-    /**
-     * Récupérer tous les comptes
-     */
+
     public List<FinancialAccount> getAllFinancialAccounts() {
         return financialAccountRepository.findAll();
     }
     
-    /**
-     * Récupérer un compte par ID
-     */
+
     public FinancialAccount getFinancialAccountById(Long id) {
         return financialAccountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Compte financier non trouvé avec l'ID: " + id));
     }
-    
-    /**
-     * Récupérer un compte par numéro
-     */
+
     public FinancialAccount getFinancialAccountByAccountNumber(String accountNumber) {
         return financialAccountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Compte non trouvé avec le numéro: " + accountNumber));
     }
     
-    /**
-     * Créer un nouveau compte
-     */
+
     public FinancialAccount createFinancialAccount(FinancialAccount financialAccount) {
         // Vérifier si le numéro de compte existe déjà
         if (financialAccountRepository.existsByAccountNumber(financialAccount.getAccountNumber())) {
@@ -59,9 +50,7 @@ public class FinancialAccountService {
         return financialAccountRepository.save(financialAccount);
     }
     
-    /**
-     * Mettre à jour un compte
-     */
+
     public FinancialAccount updateFinancialAccount(Long id, FinancialAccount accountDetails) {
         FinancialAccount financialAccount = getFinancialAccountById(id);
         
@@ -75,9 +64,7 @@ public class FinancialAccountService {
         return financialAccountRepository.save(financialAccount);
     }
     
-    /**
-     * Supprimer un compte
-     */
+
     public void deleteFinancialAccount(Long id) {
         FinancialAccount financialAccount = getFinancialAccountById(id);
         
@@ -89,9 +76,7 @@ public class FinancialAccountService {
         financialAccountRepository.delete(financialAccount);
     }
     
-    /**
-     * Activer/Désactiver un compte
-     */
+
     public FinancialAccount toggleActive(Long id) {
         FinancialAccount financialAccount = getFinancialAccountById(id);
         financialAccount.setActive(!financialAccount.getActive());
@@ -100,9 +85,6 @@ public class FinancialAccountService {
         return financialAccountRepository.save(financialAccount);
     }
     
-    /**
-     * Mettre à jour le solde
-     */
     public FinancialAccount updateBalance(Long id, BigDecimal amount, TransactionType transactionType) {
         FinancialAccount financialAccount = getFinancialAccountById(id);
         financialAccount.updateBalance(amount, transactionType);
@@ -110,53 +92,35 @@ public class FinancialAccountService {
         return financialAccountRepository.save(financialAccount);
     }
     
-    /**
-     * Comptes actifs
-     */
     public List<FinancialAccount> getActiveAccounts() {
         return financialAccountRepository.findByActiveTrue();
     }
     
-    /**
-     * Comptes par type
-     */
+
     public List<FinancialAccount> getAccountsByType(AccountType accountType) {
         return financialAccountRepository.findByAccountType(accountType);
     }
     
-    /**
-     * Comptes avec solde positif
-     */
+
     public List<FinancialAccount> getAccountsWithPositiveBalance() {
         return financialAccountRepository.findAccountsWithPositiveBalance();
     }
     
-    /**
-     * Comptes avec solde négatif
-     */
+
     public List<FinancialAccount> getAccountsWithNegativeBalance() {
         return financialAccountRepository.findAccountsWithNegativeBalance();
     }
     
-    /**
-     * Solde total de tous les comptes
-     */
     public BigDecimal getTotalBalance() {
         BigDecimal total = financialAccountRepository.getTotalBalance();
         return total != null ? total : BigDecimal.ZERO;
     }
     
-    /**
-     * Solde total par type de compte
-     */
     public BigDecimal getTotalBalanceByType(AccountType accountType) {
         BigDecimal total = financialAccountRepository.getTotalBalanceByType(accountType);
         return total != null ? total : BigDecimal.ZERO;
     }
     
-    /**
-     * Rechercher par nom
-     */
     public List<FinancialAccount> searchAccountsByName(String accountName) {
         return financialAccountRepository.findByAccountNameContainingIgnoreCase(accountName);
     }

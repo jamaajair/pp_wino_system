@@ -20,32 +20,20 @@ public class ProductService {
         this.productRepository = productRepository;
         this.categoryService = categoryService;
     }
-    
-    /**
-     * Récupérer tous les produits
-     */
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
-    
-    /**
-     * Récupérer les produits actifs
-     */
+
     public List<Product> getActiveProducts() {
         return productRepository.findByActiveTrue();
     }
-    
-    /**
-     * Récupérer un produit par ID
-     */
+
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produit non trouvé avec l'ID: " + id));
     }
-    
-    /**
-     * Créer un nouveau produit
-     */
+
     public Product createProduct(Product product) {
         // Vérifier que le code n'existe pas déjà
         if (productRepository.existsByCode(product.getCode())) {
@@ -61,10 +49,7 @@ public class ProductService {
         product.setUpdatedAt(LocalDateTime.now());
         return productRepository.save(product);
     }
-    
-    /**
-     * Mettre à jour un produit
-     */
+
     public Product updateProduct(Long id, Product productDetails) {
         Product product = getProductById(id);
         
@@ -95,31 +80,19 @@ public class ProductService {
         return productRepository.save(product);
     }
     
-    /**
-     * Supprimer un produit
-     */
     public void deleteProduct(Long id) {
         Product product = getProductById(id);
         productRepository.delete(product);
     }
-    
-    /**
-     * Récupérer produits par catégorie
-     */
+
     public List<Product> getProductsByCategory(Long categoryId) {
         return productRepository.findByCategoryId(categoryId);
     }
-    
-    /**
-     * Produits en stock faible
-     */
+
     public List<Product> getLowStockProducts() {
         return productRepository.findLowStockProducts();
     }
     
-    /**
-     * Rechercher des produits
-     */
     public List<Product> searchProducts(String keyword) {
         return productRepository.searchByName(keyword);
     }

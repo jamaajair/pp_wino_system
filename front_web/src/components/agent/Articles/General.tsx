@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, MenuItem, TextField, InputAdornment } from '@mui/material';
-import { Tag, Layers, FileText, Coins, Percent, Ruler, Boxes } from 'lucide-react';
+import { Tag, Layers, FileText, Coins, Percent, Ruler, Boxes, Hash } from 'lucide-react';
 import { getCategories } from '../../../services/categoryService';
 import type { Category } from '../../../types';
 import { FIELD_SX, SectionTitle, type ArticlePanelProps } from './articleShared';
@@ -28,6 +28,16 @@ function General({ form, setForm }: ArticlePanelProps) {
       <Box>
         <SectionTitle icon={<Tag size={15} />} label="Identification" />
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+          <TextField
+            label="Code article"
+            value={form.code}
+            onChange={handleText('code')}
+            required
+            placeholder="PRD044"
+            helperText="Unique, obligatoire"
+            sx={{ ...FIELD_SX, flex: 1, minWidth: 180 }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><Hash size={16} /></InputAdornment> }}
+          />
           <TextField
             label="Nom de l'article"
             value={form.name}

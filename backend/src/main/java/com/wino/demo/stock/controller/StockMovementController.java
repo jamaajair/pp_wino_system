@@ -24,49 +24,31 @@ public class StockMovementController {
         this.stockMovementService = stockMovementService;
     }
     
-    /**
-     * GET /api/stock-movements - Tous les mouvements
-     */
     @GetMapping
     public ResponseEntity<List<StockMovement>> getAllStockMovements() {
         return ResponseEntity.ok(stockMovementService.getAllStockMovements());
     }
     
-    /**
-     * GET /api/stock-movements/{id} - Un mouvement par ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<StockMovement> getStockMovementById(@PathVariable Long id) {
         return ResponseEntity.ok(stockMovementService.getStockMovementById(id));
     }
     
-    /**
-     * GET /api/stock-movements/product/{productId} - Mouvements par produit
-     */
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<StockMovement>> getStockMovementsByProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(stockMovementService.getStockMovementsByProduct(productId));
     }
     
-    /**
-     * GET /api/stock-movements/type/{type} - Mouvements par type
-     */
     @GetMapping("/type/{type}")
     public ResponseEntity<List<StockMovement>> getStockMovementsByType(@PathVariable MovementType type) {
         return ResponseEntity.ok(stockMovementService.getStockMovementsByType(type));
     }
-    
-    /**
-     * GET /api/stock-movements/recent - Mouvements récents
-     */
+
     @GetMapping("/recent")
     public ResponseEntity<List<StockMovement>> getRecentStockMovements() {
         return ResponseEntity.ok(stockMovementService.getRecentStockMovements());
     }
     
-    /**
-     * GET /api/stock-movements/date-range?start=...&end=... - Mouvements par période
-     */
     @GetMapping("/date-range")
     public ResponseEntity<List<StockMovement>> getStockMovementsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
@@ -74,9 +56,6 @@ public class StockMovementController {
         return ResponseEntity.ok(stockMovementService.getStockMovementsByDateRange(start, end));
     }
     
-    /**
-     * POST /api/stock-movements - Créer un mouvement
-     */
     @PostMapping
     public ResponseEntity<Map<String, Object>> createStockMovement(@RequestBody StockMovement stockMovement) {
         try {
@@ -93,10 +72,7 @@ public class StockMovementController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-    
-    /**
-     * POST /api/stock-movements/in - Entrée de stock
-     */
+
     @PostMapping("/in")
     public ResponseEntity<Map<String, Object>> stockIn(@RequestBody Map<String, Object> data) {
         try {
@@ -118,10 +94,7 @@ public class StockMovementController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
-    
-    /**
-     * POST /api/stock-movements/out - Sortie de stock
-     */
+
     @PostMapping("/out")
     public ResponseEntity<Map<String, Object>> stockOut(@RequestBody Map<String, Object> data) {
         try {
@@ -144,9 +117,6 @@ public class StockMovementController {
         }
     }
     
-    /**
-     * POST /api/stock-movements/adjust - Ajustement de stock
-     */
     @PostMapping("/adjust")
     public ResponseEntity<Map<String, Object>> adjustStock(@RequestBody Map<String, Object> data) {
         try {

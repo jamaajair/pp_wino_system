@@ -23,9 +23,7 @@ public class CustomerController {
         this.customerService = customerService;
     }
     
-    /**
-     * GET /api/customers - Tous les clients
-     */
+
     @GetMapping
     public ResponseEntity<List<Customer>> getAllCustomers() {
         return ResponseEntity.ok(customerService.getAllCustomers());
@@ -36,73 +34,51 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.searchCustomers(keyword));
     }
     
-    /**
-     * GET /api/customers/active - Clients actifs
-     */
     @GetMapping("/active")
     public ResponseEntity<List<Customer>> getActiveCustomers() {
         return ResponseEntity.ok(customerService.getActiveCustomers());
     }
     
-    /**
-     * GET /api/customers/{id} - Un client par ID
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
         return ResponseEntity.ok(customerService.getCustomerById(id));
     }
     
-    /**
-     * GET /api/customers/code/{code} - Un client par code
-     */
     @GetMapping("/code/{code}")
     public ResponseEntity<Customer> getCustomerByCode(@PathVariable String code) {
         return ResponseEntity.ok(customerService.getCustomerByCode(code));
     }
     
-    /**
-     * GET /api/customers/type/{type} - Clients par type
-     */
     @GetMapping("/type/{type}")
     public ResponseEntity<List<Customer>> getCustomersByType(@PathVariable CustomerType type) {
         return ResponseEntity.ok(customerService.getCustomersByType(type));
     }
-    
-    /**
-     * GET /api/customers/debt - Clients avec des dettes
-     */
+
     @GetMapping("/debt")
     public ResponseEntity<List<Customer>> getCustomersWithDebt() {
         return ResponseEntity.ok(customerService.getCustomersWithDebt());
     }
     
-    /**
-     * GET /api/customers/exceeding-limit - Clients dépassant leur limite
-     */
+
     @GetMapping("/exceeding-limit")
     public ResponseEntity<List<Customer>> getCustomersExceedingCreditLimit() {
         return ResponseEntity.ok(customerService.getCustomersExceedingCreditLimit());
     }
     
-    /**
-     * GET /api/customers/city/{city} - Clients par ville
-     */
+
     @GetMapping("/city/{city}")
     public ResponseEntity<List<Customer>> getCustomersByCity(@PathVariable String city) {
         return ResponseEntity.ok(customerService.getCustomersByCity(city));
     }
     
-    /**
-     * GET /api/customers/search?keyword=... - Recherche
-     */
+
     @GetMapping("/search")
     public ResponseEntity<List<Customer>> searchCustomers(@RequestParam String keyword) {
         return ResponseEntity.ok(customerService.searchCustomers(keyword));
     }
     
-    /**
-     * POST /api/customers - Créer un client
-     */
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createCustomer(@RequestBody Customer customer) {
         try {
@@ -120,9 +96,6 @@ public class CustomerController {
         }
     }
     
-    /**
-     * PUT /api/customers/{id} - Mettre à jour un client
-     */
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateCustomer(
             @PathVariable Long id, 
@@ -142,9 +115,7 @@ public class CustomerController {
         }
     }
     
-    /**
-     * DELETE /api/customers/{id} - Supprimer un client
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteCustomer(@PathVariable Long id) {
         try {
@@ -161,9 +132,7 @@ public class CustomerController {
         }
     }
     
-    /**
-     * PATCH /api/customers/{id}/deactivate - Désactiver un client
-     */
+
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<Map<String, Object>> deactivateCustomer(@PathVariable Long id) {
         try {
@@ -181,9 +150,7 @@ public class CustomerController {
         }
     }
     
-    /**
-     * PATCH /api/customers/{id}/activate - Activer un client
-     */
+
     @PatchMapping("/{id}/activate")
     public ResponseEntity<Map<String, Object>> activateCustomer(@PathVariable Long id) {
         try {
@@ -201,9 +168,6 @@ public class CustomerController {
         }
     }
     
-    /**
-     * PATCH /api/customers/{id}/balance - Mettre à jour le solde
-     */
     @PatchMapping("/{id}/balance")
     public ResponseEntity<Map<String, Object>> updateBalance(
             @PathVariable Long id, 

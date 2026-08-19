@@ -38,7 +38,7 @@ public class Payment {
     private Customer customer;
     
     @Column(length = 255)
-    private String reference; // Référence du paiement (numéro de chèque, transaction ID, etc.)
+    private String reference;
     
     @Column(columnDefinition = "TEXT")
     private String notes;
@@ -65,10 +65,6 @@ public class Payment {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    
-    /**
-     * Valider le paiement
-     */
     public boolean validate() {
         // Vérifications de validation
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -90,9 +86,6 @@ public class Payment {
         return true;
     }
     
-    /**
-     * Vérifier si le paiement est valide
-     */
     public boolean isValid() {
         try {
             return amount != null && amount.compareTo(BigDecimal.ZERO) > 0

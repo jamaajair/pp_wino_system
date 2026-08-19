@@ -9,9 +9,7 @@ import java.util.List;
 @Repository
 public interface SaleDocumentLineRepository extends JpaRepository<SaleDocumentLine, Long> {
     
-    // Lignes par document
     List<SaleDocumentLine> findBySaleDocumentId(Long saleDocumentId);
     
-    // Lignes par produit
     List<SaleDocumentLine> findByProductId(Long productId);
 }

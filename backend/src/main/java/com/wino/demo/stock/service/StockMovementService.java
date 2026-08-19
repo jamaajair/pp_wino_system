@@ -23,25 +23,16 @@ public class StockMovementService {
         this.stockMovementRepository = stockMovementRepository;
         this.productService = productService;
     }
-    
-    /**
-     * Récupérer tous les mouvements
-     */
+
     public List<StockMovement> getAllStockMovements() {
         return stockMovementRepository.findAll();
     }
-    
-    /**
-     * Récupérer un mouvement par ID
-     */
+
     public StockMovement getStockMovementById(Long id) {
         return stockMovementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mouvement de stock non trouvé avec l'ID: " + id));
     }
-    
-    /**
-     * Créer un mouvement de stock et l'appliquer
-     */
+
     public StockMovement createStockMovement(StockMovement stockMovement) {
         // Valider le produit
         if (stockMovement.getProduct() != null && stockMovement.getProduct().getId() != null) {
@@ -66,38 +57,23 @@ public class StockMovementService {
         
         return saved;
     }
-    
-    /**
-     * Mouvements par produit
-     */
+
     public List<StockMovement> getStockMovementsByProduct(Long productId) {
         return stockMovementRepository.findByProductId(productId);
     }
-    
-    /**
-     * Mouvements par type
-     */
+
     public List<StockMovement> getStockMovementsByType(MovementType type) {
         return stockMovementRepository.findByType(type);
     }
     
-    /**
-     * Mouvements entre deux dates
-     */
     public List<StockMovement> getStockMovementsByDateRange(LocalDateTime start, LocalDateTime end) {
         return stockMovementRepository.findByCreatedAtBetween(start, end);
     }
-    
-    /**
-     * Mouvements récents
-     */
+
     public List<StockMovement> getRecentStockMovements() {
         return stockMovementRepository.findRecentMovements();
     }
-    
-    /**
-     * Entrée de stock
-     */
+
     public StockMovement stockIn(Long productId, Integer quantity, String reason, String reference) {
         StockMovement movement = new StockMovement();
         movement.setProduct(productService.getProductById(productId));
@@ -108,10 +84,7 @@ public class StockMovementService {
         
         return createStockMovement(movement);
     }
-    
-    /**
-     * Sortie de stock
-     */
+
     public StockMovement stockOut(Long productId, Integer quantity, String reason, String reference) {
         StockMovement movement = new StockMovement();
         movement.setProduct(productService.getProductById(productId));
@@ -122,16 +95,7 @@ public class StockMovementService {
         
         return createStockMovement(movement);
     }
-    
-    /**
-     * Sortie liée à une vente : tolère un stock insuffisant au lieu d'échouer.
-     *
-     * Le stock descend au plus bas à zéro, jamais en négatif. Le mouvement enregistré
-     * porte la quantité réellement sortie, pas la quantité demandée : l'historique doit
-     * pouvoir être resommé pour retrouver le stock courant.
-     *
-     * @return la quantité manquante, 0 si tout a pu être sorti
-     */
+
     public int stockOutForSale(Long productId, int quantity, String reason, String reference) {
         Product product = productService.getProductById(productId);
 
@@ -155,9 +119,6 @@ public class StockMovementService {
         return shortage;
     }
 
-    /**
-     * Ajustement de stock
-     */
     public StockMovement adjustStock(Long productId, Integer quantity, String reason) {
         StockMovement movement = new StockMovement();
         movement.setProduct(productService.getProductById(productId));

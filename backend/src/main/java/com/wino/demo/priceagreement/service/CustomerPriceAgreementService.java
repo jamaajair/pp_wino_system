@@ -28,25 +28,16 @@ public class CustomerPriceAgreementService {
         this.customerService = customerService;
         this.productService = productService;
     }
-    
-    /**
-     * Récupérer tous les accords
-     */
+
     public List<CustomerPriceAgreement> getAllAgreements() {
         return agreementRepository.findAll();
     }
-    
-    /**
-     * Récupérer un accord par ID
-     */
+
     public CustomerPriceAgreement getAgreementById(Long id) {
         return agreementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Accord de prix non trouvé avec l'ID: " + id));
     }
-    
-    /**
-     * Créer un nouvel accord
-     */
+
     public CustomerPriceAgreement createAgreement(CustomerPriceAgreement agreement) {
         // Valider le client
         if (agreement.getCustomer() != null && agreement.getCustomer().getId() != null) {
@@ -87,9 +78,6 @@ public class CustomerPriceAgreementService {
         return agreementRepository.save(agreement);
     }
     
-    /**
-     * Mettre à jour un accord
-     */
     public CustomerPriceAgreement updateAgreement(Long id, CustomerPriceAgreement agreementDetails) {
         CustomerPriceAgreement agreement = getAgreementById(id);
         
@@ -108,55 +96,34 @@ public class CustomerPriceAgreementService {
         return agreementRepository.save(agreement);
     }
     
-    /**
-     * Supprimer un accord
-     */
     public void deleteAgreement(Long id) {
         CustomerPriceAgreement agreement = getAgreementById(id);
         agreementRepository.delete(agreement);
     }
-    
-    /**
-     * Accords par client
-     */
+
     public List<CustomerPriceAgreement> getAgreementsByCustomer(Long customerId) {
         return agreementRepository.findByCustomerId(customerId);
     }
-    
-    /**
-     * Accords par produit
-     */
+
     public List<CustomerPriceAgreement> getAgreementsByProduct(Long productId) {
         return agreementRepository.findByProductId(productId);
     }
-    
-    /**
-     * Accords valides pour un client aujourd'hui
-     */
+
     public List<CustomerPriceAgreement> getValidAgreementsForCustomer(Long customerId) {
         return agreementRepository.findValidAgreementsForCustomer(customerId, LocalDate.now());
     }
-    
-    /**
-     * Obtenir le prix spécial pour un client et un produit
-     */
+
     public Optional<BigDecimal> getSpecialPrice(Long customerId, Long productId) {
         Optional<CustomerPriceAgreement> agreement = 
                 agreementRepository.findValidAgreement(customerId, productId, LocalDate.now());
         
         return agreement.map(CustomerPriceAgreement::getSpecialPrice);
     }
-    
-    /**
-     * Accords expirés
-     */
+
     public List<CustomerPriceAgreement> getExpiredAgreements() {
         return agreementRepository.findExpiredAgreements(LocalDate.now());
     }
-    
-    /**
-     * Vérifier si un accord est valide
-     */
+
     public boolean isAgreementValid(Long id) {
         CustomerPriceAgreement agreement = getAgreementById(id);
         return agreement.isValid();

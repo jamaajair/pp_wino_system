@@ -33,7 +33,7 @@ public class StockMovement {
     private String reason;
     
     @Column(name = "reference_document", length = 100)
-    private String referenceDocument; // Référence du document source (bon de commande, vente, etc.)
+    private String referenceDocument; // document source
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -43,9 +43,6 @@ public class StockMovement {
         createdAt = LocalDateTime.now();
     }
     
-    /**
-     * Appliquer le mouvement au stock du produit
-     */
     public void apply() {
         if (product == null) {
             throw new RuntimeException("Produit non défini pour ce mouvement de stock");

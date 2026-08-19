@@ -3,6 +3,9 @@ import { Box, Typography } from '@mui/material';
 // Modèle du formulaire article (dérivé de Product). Les champs numériques
 // acceptent '' pour permettre un champ vide avant saisie.
 export interface ArticleForm {
+  // Obligatoire et unique côté base (products.code NOT NULL UNIQUE) :
+  // sans lui l'insertion est rejetée par ProductService.createProduct.
+  code: string;
   name: string;
   categoryId: number | '';
   description: string;
@@ -16,6 +19,7 @@ export interface ArticleForm {
 }
 
 export const EMPTY_ARTICLE: ArticleForm = {
+  code: '',
   name: '',
   categoryId: '',
   description: '',

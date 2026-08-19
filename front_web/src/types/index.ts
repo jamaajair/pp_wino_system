@@ -65,6 +65,23 @@ export interface Article {
   categoryId?: number; // ID de la catégorie à laquelle appartient l'article
 }
 
+// Corps attendu par POST /api/products. Le backend désérialise directement
+// l'entité Product : la catégorie est donc un objet imbriqué, et non un
+// categoryId à plat comme dans Article ci-dessus.
+export interface ProductCreateRequest {
+  code: string;
+  name: string;
+  description?: string;
+  purchasePrice?: number;
+  salePrice: number;
+  stockQuantity: number;
+  tva?: number;
+  qteColis?: number;
+  unit?: string;
+  active: boolean;
+  category?: { id: number };
+}
+
 export interface Supplier {
   id?: number;
   code: string;

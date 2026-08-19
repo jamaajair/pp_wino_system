@@ -36,10 +36,7 @@ public class PurchaseDocumentLine {
     
     @Column(name = "line_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal lineTotal;
-    
-    /**
-     * Calculer le total de la ligne
-     */
+
     public BigDecimal calculateLineTotal() {
         if (quantity == null || unitPrice == null) {
             this.lineTotal = BigDecimal.ZERO;

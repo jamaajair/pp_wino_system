@@ -54,10 +54,7 @@ public class CustomerPriceAgreement {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    
-    /**
-     * Vérifier si l'accord de prix est valide aujourd'hui
-     */
+
     public boolean isValid() {
         LocalDate today = LocalDate.now();
         
@@ -79,9 +76,7 @@ public class CustomerPriceAgreement {
         return true;
     }
     
-    /**
-     * Vérifier si l'accord est valide à une date donnée
-     */
+
     public boolean isValidOn(LocalDate date) {
         if (date == null) {
             date = LocalDate.now();

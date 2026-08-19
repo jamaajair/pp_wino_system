@@ -9,9 +9,7 @@ import java.util.List;
 @Repository
 public interface PurchaseDocumentLineRepository extends JpaRepository<PurchaseDocumentLine, Long> {
     
-    // Lignes par document
     List<PurchaseDocumentLine> findByPurchaseDocumentId(Long purchaseDocumentId);
     
-    // Lignes par produit
     List<PurchaseDocumentLine> findByProductId(Long productId);
 }

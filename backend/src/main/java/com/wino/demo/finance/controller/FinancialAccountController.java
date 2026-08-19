@@ -24,65 +24,43 @@ public class FinancialAccountController {
         this.financialAccountService = financialAccountService;
     }
     
-    /**
-     * GET /api/financial-accounts - Tous les comptes
-     */
     @GetMapping
     public ResponseEntity<List<FinancialAccount>> getAllFinancialAccounts() {
         return ResponseEntity.ok(financialAccountService.getAllFinancialAccounts());
     }
     
-    /**
-     * GET /api/financial-accounts/{id} - Un compte par ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<FinancialAccount> getFinancialAccountById(@PathVariable Long id) {
         return ResponseEntity.ok(financialAccountService.getFinancialAccountById(id));
     }
     
-    /**
-     * GET /api/financial-accounts/number/{accountNumber} - Un compte par numéro
-     */
     @GetMapping("/number/{accountNumber}")
     public ResponseEntity<FinancialAccount> getFinancialAccountByAccountNumber(@PathVariable String accountNumber) {
         return ResponseEntity.ok(financialAccountService.getFinancialAccountByAccountNumber(accountNumber));
     }
     
-    /**
-     * GET /api/financial-accounts/active - Comptes actifs
-     */
     @GetMapping("/active")
     public ResponseEntity<List<FinancialAccount>> getActiveAccounts() {
         return ResponseEntity.ok(financialAccountService.getActiveAccounts());
     }
     
-    /**
-     * GET /api/financial-accounts/type/{type} - Comptes par type
-     */
     @GetMapping("/type/{type}")
     public ResponseEntity<List<FinancialAccount>> getAccountsByType(@PathVariable AccountType type) {
         return ResponseEntity.ok(financialAccountService.getAccountsByType(type));
     }
     
-    /**
-     * GET /api/financial-accounts/positive-balance - Comptes avec solde positif
-     */
+
     @GetMapping("/positive-balance")
     public ResponseEntity<List<FinancialAccount>> getAccountsWithPositiveBalance() {
         return ResponseEntity.ok(financialAccountService.getAccountsWithPositiveBalance());
     }
     
-    /**
-     * GET /api/financial-accounts/negative-balance - Comptes avec solde négatif
-     */
     @GetMapping("/negative-balance")
     public ResponseEntity<List<FinancialAccount>> getAccountsWithNegativeBalance() {
         return ResponseEntity.ok(financialAccountService.getAccountsWithNegativeBalance());
     }
     
-    /**
-     * GET /api/financial-accounts/total-balance - Solde total
-     */
+
     @GetMapping("/total-balance")
     public ResponseEntity<Map<String, Object>> getTotalBalance() {
         BigDecimal total = financialAccountService.getTotalBalance();
@@ -93,9 +71,7 @@ public class FinancialAccountController {
         return ResponseEntity.ok(response);
     }
     
-    /**
-     * GET /api/financial-accounts/type/{type}/total-balance - Solde total par type
-     */
+
     @GetMapping("/type/{type}/total-balance")
     public ResponseEntity<Map<String, Object>> getTotalBalanceByType(@PathVariable AccountType type) {
         BigDecimal total = financialAccountService.getTotalBalanceByType(type);
@@ -107,17 +83,13 @@ public class FinancialAccountController {
         return ResponseEntity.ok(response);
     }
     
-    /**
-     * GET /api/financial-accounts/search?name=... - Recherche par nom
-     */
+
     @GetMapping("/search")
     public ResponseEntity<List<FinancialAccount>> searchAccountsByName(@RequestParam String name) {
         return ResponseEntity.ok(financialAccountService.searchAccountsByName(name));
     }
     
-    /**
-     * POST /api/financial-accounts - Créer un compte
-     */
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> createFinancialAccount(@RequestBody FinancialAccount financialAccount) {
         try {
@@ -135,9 +107,7 @@ public class FinancialAccountController {
         }
     }
     
-    /**
-     * PUT /api/financial-accounts/{id} - Mettre à jour un compte
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateFinancialAccount(
             @PathVariable Long id, 
@@ -157,9 +127,6 @@ public class FinancialAccountController {
         }
     }
     
-    /**
-     * DELETE /api/financial-accounts/{id} - Supprimer un compte
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteFinancialAccount(@PathVariable Long id) {
         try {
@@ -176,9 +143,6 @@ public class FinancialAccountController {
         }
     }
     
-    /**
-     * PATCH /api/financial-accounts/{id}/toggle-active - Activer/Désactiver un compte
-     */
     @PatchMapping("/{id}/toggle-active")
     public ResponseEntity<Map<String, Object>> toggleActive(@PathVariable Long id) {
         try {
@@ -195,10 +159,8 @@ public class FinancialAccountController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
     }
+
     
-    /**
-     * PATCH /api/financial-accounts/{id}/update-balance - Mettre à jour le solde
-     */
     @PatchMapping("/{id}/update-balance")
     public ResponseEntity<Map<String, Object>> updateBalance(
             @PathVariable Long id,

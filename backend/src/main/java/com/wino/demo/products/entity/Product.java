@@ -52,7 +52,7 @@ public class Product {
     private Integer maxStockLevel;
     
     @Column(length = 20)
-    private String unit; // Ex: "pcs", "kg", "L", "box"
+    private String unit;
     
     @Column(unique = true, length = 50)
     private String barcode;

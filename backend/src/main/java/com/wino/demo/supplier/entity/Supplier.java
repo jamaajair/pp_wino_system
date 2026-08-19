@@ -48,7 +48,7 @@ public class Supplier {
     private String contactPerson;
     
     @Column(name = "payment_terms")
-    private Integer paymentTerms; // Délai de paiement en jours (ex: 30, 60, 90)
+    private Integer paymentTerms; // Délai de paie
     
     @Column(nullable = false)
     private Boolean active = true;

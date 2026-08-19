@@ -30,9 +30,7 @@ public class FinancialTransactionService {
         this.userService = userService;
     }
     
-    /**
-     * Générer un numéro de transaction unique
-     */
+
     private String generateTransactionNumber() {
         String prefix = "TXN";
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -41,33 +39,22 @@ public class FinancialTransactionService {
         
         return String.format("%s%s-%06d", prefix, date, count + 1);
     }
-    
-    /**
-     * Récupérer toutes les transactions
-     */
+
     public List<FinancialTransaction> getAllFinancialTransactions() {
         return financialTransactionRepository.findAll();
     }
     
-    /**
-     * Récupérer une transaction par ID
-     */
     public FinancialTransaction getFinancialTransactionById(Long id) {
         return financialTransactionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Transaction financière non trouvée avec l'ID: " + id));
     }
-    
-    /**
-     * Récupérer une transaction par numéro
-     */
+
     public FinancialTransaction getFinancialTransactionByTransactionNumber(String transactionNumber) {
         return financialTransactionRepository.findByTransactionNumber(transactionNumber)
                 .orElseThrow(() -> new RuntimeException("Transaction non trouvée avec le numéro: " + transactionNumber));
     }
     
-    /**
-     * Créer une nouvelle transaction
-     */
+
     public FinancialTransaction createFinancialTransaction(FinancialTransaction financialTransaction) {
         // Générer le numéro de transaction
         financialTransaction.setTransactionNumber(generateTransactionNumber());
@@ -92,10 +79,7 @@ public class FinancialTransactionService {
         
         return financialTransactionRepository.save(financialTransaction);
     }
-    
-    /**
-     * Mettre à jour une transaction
-     */
+
     public FinancialTransaction updateFinancialTransaction(Long id, FinancialTransaction transactionDetails) {
         FinancialTransaction financialTransaction = getFinancialTransactionById(id);
         
@@ -116,9 +100,7 @@ public class FinancialTransactionService {
         return financialTransactionRepository.save(financialTransaction);
     }
     
-    /**
-     * Supprimer une transaction
-     */
+
     public void deleteFinancialTransaction(Long id) {
         FinancialTransaction financialTransaction = getFinancialTransactionById(id);
         
@@ -130,9 +112,7 @@ public class FinancialTransactionService {
         financialTransactionRepository.delete(financialTransaction);
     }
     
-    /**
-     * Appliquer une transaction
-     */
+
     public FinancialTransaction applyTransaction(Long id, Long validatedByUserId) {
         FinancialTransaction financialTransaction = getFinancialTransactionById(id);
         
@@ -147,9 +127,6 @@ public class FinancialTransactionService {
         return financialTransactionRepository.save(financialTransaction);
     }
     
-    /**
-     * Annuler une transaction
-     */
     public FinancialTransaction reverseTransaction(Long id) {
         FinancialTransaction financialTransaction = getFinancialTransactionById(id);
         financialTransaction.reverse();
@@ -157,81 +134,51 @@ public class FinancialTransactionService {
         return financialTransactionRepository.save(financialTransaction);
     }
     
-    /**
-     * Transactions par compte
-     */
+
     public List<FinancialTransaction> getTransactionsByAccount(Long accountId) {
         return financialTransactionRepository.findByAccountId(accountId);
     }
     
-    /**
-     * Transactions par type
-     */
     public List<FinancialTransaction> getTransactionsByType(TransactionType transactionType) {
         return financialTransactionRepository.findByTransactionType(transactionType);
     }
     
-    /**
-     * Transactions par utilisateur créateur
-     */
+
     public List<FinancialTransaction> getTransactionsByCreator(Long userId) {
         return financialTransactionRepository.findByCreatedById(userId);
     }
     
-    /**
-     * Transactions par utilisateur validateur
-     */
+
     public List<FinancialTransaction> getTransactionsByValidator(Long userId) {
         return financialTransactionRepository.findByValidatedById(userId);
     }
     
-    /**
-     * Transactions appliquées
-     */
     public List<FinancialTransaction> getAppliedTransactions() {
         return financialTransactionRepository.findByAppliedTrue();
     }
     
-    /**
-     * Transactions en attente
-     */
     public List<FinancialTransaction> getPendingTransactions() {
         return financialTransactionRepository.findByAppliedFalse();
     }
     
-    /**
-     * Transactions entre deux dates
-     */
     public List<FinancialTransaction> getTransactionsByDateRange(LocalDate startDate, LocalDate endDate) {
         return financialTransactionRepository.findByTransactionDateBetween(startDate, endDate);
     }
-    
-    /**
-     * Transactions par catégorie
-     */
+
     public List<FinancialTransaction> getTransactionsByCategory(String category) {
         return financialTransactionRepository.findByCategory(category);
     }
-    
-    /**
-     * Somme des transactions d'un compte
-     */
+
     public BigDecimal getTotalTransactionsByAccount(Long accountId) {
         BigDecimal total = financialTransactionRepository.sumTransactionsByAccount(accountId);
         return total != null ? total : BigDecimal.ZERO;
     }
     
-    /**
-     * Somme des transactions par type
-     */
     public BigDecimal getTotalTransactionsByType(TransactionType transactionType) {
         BigDecimal total = financialTransactionRepository.sumTransactionsByType(transactionType);
         return total != null ? total : BigDecimal.ZERO;
     }
     
-    /**
-     * Rechercher par référence
-     */
     public List<FinancialTransaction> searchByReference(String reference) {
         return financialTransactionRepository.findByReferenceContainingIgnoreCase(reference);
     }

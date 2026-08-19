@@ -7,13 +7,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
-/**
- * Traduit les refus métier du module vente en codes HTTP exploitables par le front.
- * Sans ça toute RuntimeException finit en 500, et le client ne peut pas distinguer
- * « conversion déjà effectuée » d'une vraie panne serveur.
- *
- * Le corps { "error": ... } reprend la forme déjà renvoyée par AuthController.
- */
 @RestControllerAdvice
 public class SaleDocumentExceptionHandler {
 

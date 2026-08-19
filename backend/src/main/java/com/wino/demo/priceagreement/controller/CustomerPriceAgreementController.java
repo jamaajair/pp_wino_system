@@ -23,57 +23,36 @@ public class CustomerPriceAgreementController {
         this.agreementService = agreementService;
     }
     
-    /**
-     * GET /api/price-agreements - Tous les accords
-     */
     @GetMapping
     public ResponseEntity<List<CustomerPriceAgreement>> getAllAgreements() {
         return ResponseEntity.ok(agreementService.getAllAgreements());
     }
-    
-    /**
-     * GET /api/price-agreements/{id} - Un accord par ID
-     */
+
     @GetMapping("/{id}")
     public ResponseEntity<CustomerPriceAgreement> getAgreementById(@PathVariable Long id) {
         return ResponseEntity.ok(agreementService.getAgreementById(id));
     }
-    
-    /**
-     * GET /api/price-agreements/customer/{customerId} - Accords par client
-     */
+
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<CustomerPriceAgreement>> getAgreementsByCustomer(@PathVariable Long customerId) {
         return ResponseEntity.ok(agreementService.getAgreementsByCustomer(customerId));
     }
     
-    /**
-     * GET /api/price-agreements/product/{productId} - Accords par produit
-     */
     @GetMapping("/product/{productId}")
     public ResponseEntity<List<CustomerPriceAgreement>> getAgreementsByProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(agreementService.getAgreementsByProduct(productId));
     }
     
-    /**
-     * GET /api/price-agreements/customer/{customerId}/valid - Accords valides pour un client
-     */
     @GetMapping("/customer/{customerId}/valid")
     public ResponseEntity<List<CustomerPriceAgreement>> getValidAgreementsForCustomer(@PathVariable Long customerId) {
         return ResponseEntity.ok(agreementService.getValidAgreementsForCustomer(customerId));
     }
-    
-    /**
-     * GET /api/price-agreements/expired - Accords expirés
-     */
+
     @GetMapping("/expired")
     public ResponseEntity<List<CustomerPriceAgreement>> getExpiredAgreements() {
         return ResponseEntity.ok(agreementService.getExpiredAgreements());
     }
     
-    /**
-     * GET /api/price-agreements/special-price?customerId=...&productId=... - Obtenir le prix spécial
-     */
     @GetMapping("/special-price")
     public ResponseEntity<Map<String, Object>> getSpecialPrice(
             @RequestParam Long customerId, 
@@ -91,10 +70,7 @@ public class CustomerPriceAgreementController {
         
         return ResponseEntity.ok(response);
     }
-    
-    /**
-     * GET /api/price-agreements/{id}/valid - Vérifier si un accord est valide
-     */
+
     @GetMapping("/{id}/valid")
     public ResponseEntity<Map<String, Object>> isAgreementValid(@PathVariable Long id) {
         boolean valid = agreementService.isAgreementValid(id);
@@ -105,9 +81,6 @@ public class CustomerPriceAgreementController {
         return ResponseEntity.ok(response);
     }
     
-    /**
-     * POST /api/price-agreements - Créer un accord
-     */
     @PostMapping
     public ResponseEntity<Map<String, Object>> createAgreement(@RequestBody CustomerPriceAgreement agreement) {
         try {
@@ -125,9 +98,6 @@ public class CustomerPriceAgreementController {
         }
     }
     
-    /**
-     * PUT /api/price-agreements/{id} - Mettre à jour un accord
-     */
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateAgreement(
             @PathVariable Long id, 
@@ -147,9 +117,6 @@ public class CustomerPriceAgreementController {
         }
     }
     
-    /**
-     * DELETE /api/price-agreements/{id} - Supprimer un accord
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> deleteAgreement(@PathVariable Long id) {
         try {

@@ -28,8 +28,6 @@ public class PurchaseDocument {
     @Column(name = "document_number", nullable = false, unique = true, length = 50)
     private String documentNumber;
 
-    // Référence propre au fournisseur, distincte de notre numéro interne généré :
-    // c'est elle qui figure sur le papier reçu et qui sert au rapprochement comptable.
     @Column(name = "supplier_invoice_number", length = 100)
     private String supplierInvoiceNumber;
 
@@ -54,7 +52,7 @@ public class PurchaseDocument {
     private String notes;
     
     @Column(length = 100)
-    private String status; // DRAFT, SENT, RECEIVED, PAID
+    private String status;
     
     @Column(name = "stock_updated")
     private Boolean stockUpdated = false;
@@ -89,35 +87,23 @@ public class PurchaseDocument {
         updatedAt = LocalDateTime.now();
     }
     
-    /**
-     * Calculer le montant total
-     */
     public void calculateTotalAmount() {
         this.totalAmount = lines.stream()
                 .map(PurchaseDocumentLine::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
     
-    /**
-     * Ajouter une ligne
-     */
     public void addLine(PurchaseDocumentLine line) {
         lines.add(line);
         line.setPurchaseDocument(this);
     }
-    
-    /**
-     * Retirer une ligne
-     */
+
     public void removeLine(PurchaseDocumentLine line) {
         lines.remove(line);
         line.setPurchaseDocument(null);
     }
     
-    /**
-     * Mettre à jour le stock
-     * Crée des mouvements de stock pour chaque ligne du document
-     */
+
     public List<StockMovement> updateStock() {
         if (this.stockUpdated) {
             throw new RuntimeException("Le stock a déjà été mis à jour pour ce document");
@@ -138,8 +124,6 @@ public class PurchaseDocument {
             movement.setReason("Réception fournisseur");
             movement.setReferenceDocument(this.documentNumber);
 
-            // Ne pas appliquer ici : StockMovementService.createStockMovement()
-            // applique le mouvement au stock (éviter le double comptage).
             movements.add(movement);
         }
         

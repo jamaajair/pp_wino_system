@@ -24,11 +24,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class SaleDocument {
 
-    /**
-     * Statuts terminaux : le document est mort, plus aucun autre n'en découle.
-     * PAID, SHIPPED ou DELIVERED n'en font pas partie — facturer un bon de livraison
-     * déjà livré est au contraire le flux normal.
-     */
     private static final Set<SaleDocumentStatus> NON_CONVERTIBLE_STATUSES = EnumSet.of(
             SaleDocumentStatus.CANCELLED,
             SaleDocumentStatus.REJECTED,
@@ -115,36 +110,23 @@ public class SaleDocument {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-    
-    /**
-     * Calculer le montant total
-     */
+
     public void calculateTotalAmount() {
         this.totalAmount = lines.stream()
                 .map(SaleDocumentLine::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
-    
-    /**
-     * Ajouter une ligne
-     */
+
     public void addLine(SaleDocumentLine line) {
         lines.add(line);
         line.setSaleDocument(this);
     }
-    
-    /**
-     * Retirer une ligne
-     */
+
     public void removeLine(SaleDocumentLine line) {
         lines.remove(line);
         line.setSaleDocument(null);
     }
-    
-    /**
-     * Convertir le document en un autre type
-     * Par exemple: QUOTE -> ORDER -> DELIVERY_NOTE -> INVOICE
-     */
+
     public SaleDocument convertTo(SaleDocumentType newType) {
         if (NON_CONVERTIBLE_STATUSES.contains(this.status)) {
             throw new SaleDocumentConversionException("Le document " + this.documentNumber + " est au statut "
@@ -158,8 +140,6 @@ public class SaleDocument {
         setConvertedFlag(newType);
         SaleDocument newDocument = new SaleDocument();
         newDocument.setType(newType);
-        // Le nouveau document pointe toujours vers celui dont il est issu,
-        // que la source soit un document d'origine ou déjà le fruit d'une conversion.
         newDocument.setConvertedFromDocumentNumber(this.documentNumber);
         newDocument.setCustomer(this.customer);
         newDocument.setDocumentDate(LocalDate.now());
@@ -196,11 +176,7 @@ public class SaleDocument {
         };
     }
 
-    /**
-     * Les colonnes converted_* ont été ajoutées après coup par ddl-auto=update : elles sont
-     * nullables, et valent NULL sur toute ligne insérée sans les mentionner (cf. sample-data.sql).
-     * Déboxer directement un Boolean à null lèverait une NullPointerException.
-     */
+
     private static boolean alreadyConverted(Boolean flag) {
         return Boolean.TRUE.equals(flag);
     }
