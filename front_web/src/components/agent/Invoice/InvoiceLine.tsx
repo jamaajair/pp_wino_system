@@ -10,10 +10,10 @@ interface InvoiceLineProps {
 
 function InvoiceLine({ item, onRemove, onUpdateQty }: InvoiceLineProps) {
   const { product, qty } = item;
-  const prixTTC = product.salePrice * qty;
-  const prixHTVA = prixTTC / (1 + product.tva / 100);
-  const prixRevient = product.purchasePrice * qty;
-  const benefice = prixHTVA - prixRevient;
+  console.log("qte est : ", product.qteColis, " et qte saisi est : ", qty, " et prix de vente est : ", product.salePrice, " et prix d'achat est : ", product.purchasePrice, " et tva est : ", product.tva);
+  const prixHTVA = (product.qteColis * product.salePrice * qty);
+  const prixTTC = (product.tva / 100) * prixHTVA + prixHTVA;
+  const benefice = prixHTVA - (product.purchasePrice * qty * product.qteColis);
 
   return (
     <Paper
@@ -65,7 +65,7 @@ function InvoiceLine({ item, onRemove, onUpdateQty }: InvoiceLineProps) {
 
         {/* Prix de revient — minWidth: 70, right */}
         <Typography fontSize={14} sx={{ minWidth: 70, textAlign: 'right' }}>
-          {prixRevient.toFixed(2)} €
+          {product.purchasePrice.toFixed(2)} €
         </Typography>
 
         {/* TVA — minWidth: 70, right */}

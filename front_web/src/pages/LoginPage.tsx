@@ -11,13 +11,7 @@ import type { AuthResponse } from '../services/authService';
 const NAVY = '#1a237e';
 const NAVY_DARK = '#0d1757';
 
-// Ce que le produit fait, affiché sur le panneau de marque : l'écran de connexion
-// est souvent le premier contact d'un nouvel utilisateur avec le système.
-const HIGHLIGHTS = [
-  { icon: <FileText size={17} />, label: 'Devis, commandes, factures', hint: 'Chaîne documentaire complète' },
-  { icon: <Warehouse size={17} />, label: 'Stock et inventaire', hint: 'Mouvements tracés à la pièce' },
-  { icon: <Wallet size={17} />, label: 'Comptes et paiements', hint: 'Trésorerie en temps réel' },
-];
+
 
 function loginErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
@@ -66,7 +60,6 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: 'white' }}>
 
-      {/* ---------------- Panneau de marque (masqué sous md) ---------------- */}
       <Box
         sx={{
           display: { xs: 'none', md: 'flex' },
@@ -80,15 +73,6 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
           background: `linear-gradient(150deg, ${NAVY} 0%, #283593 45%, ${NAVY_DARK} 100%)`,
         }}
       >
-        {/* Cercles décoratifs : donnent de la profondeur sans image à charger. */}
-        <Box sx={{
-          position: 'absolute', width: 420, height: 420, borderRadius: '50%',
-          border: '1px solid rgba(255,255,255,0.07)', top: -140, right: -130,
-        }} />
-        <Box sx={{
-          position: 'absolute', width: 300, height: 300, borderRadius: '50%',
-          backgroundColor: 'rgba(255,255,255,0.04)', bottom: -110, left: -90,
-        }} />
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, position: 'relative' }}>
           <Box sx={{
@@ -111,24 +95,6 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
             Un document émis met à jour le stock et alimente les comptes. Plus de
             ressaisie, plus d'écart en fin de mois.
           </Typography>
-
-          <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {HIGHLIGHTS.map(item => (
-              <Box key={item.label} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{
-                  width: 38, height: 38, borderRadius: 2, flexShrink: 0,
-                  backgroundColor: 'rgba(255,255,255,0.11)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {item.icon}
-                </Box>
-                <Box>
-                  <Typography sx={{ fontWeight: 600, fontSize: '0.9rem' }}>{item.label}</Typography>
-                  <Typography sx={{ fontSize: '0.78rem', opacity: 0.6 }}>{item.hint}</Typography>
-                </Box>
-              </Box>
-            ))}
-          </Box>
         </Box>
 
         <Typography sx={{ fontSize: '0.75rem', opacity: 0.45, position: 'relative' }}>
@@ -136,7 +102,6 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
         </Typography>
       </Box>
 
-      {/* ---------------- Formulaire ---------------- */}
       <Box
         sx={{
           flex: 1,
@@ -149,7 +114,6 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
       >
         <Box sx={{ width: '100%', maxWidth: 380 }}>
 
-          {/* Logo compact : remplace le panneau de marque sur petit écran. */}
           <Box sx={{
             display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1.5, mb: 4,
           }}>
@@ -179,7 +143,7 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
               size="small"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin"
+              placeholder="Nom d'utilisateur"
               required
               autoFocus
               autoComplete="username"
@@ -262,7 +226,7 @@ function LoginPage({ onLogin }: { onLogin: (user: AuthResponse) => void }) {
           </Box>
 
           <Typography sx={{ mt: 4, fontSize: '0.78rem', color: '#9ca3af', textAlign: 'center' }}>
-            Problème d'accès ? Contactez votre administrateur.
+            Problème d'accès ? Contactez Jamaa JAIR sur 04 12 34 56 78.
           </Typography>
         </Box>
       </Box>

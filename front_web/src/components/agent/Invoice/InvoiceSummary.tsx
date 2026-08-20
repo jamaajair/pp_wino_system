@@ -9,8 +9,8 @@ interface InvoiceSummaryProps{
 function InvoiceSummary({ items }: InvoiceSummaryProps) {
 
     const nmbr_colis = items.reduce((acc, item) => acc + item.qty, 0);
-    const total_htva = items.reduce((acc, item) => acc + item.qty * item.product.salePrice, 0);
-    const total_ttc = items.reduce((acc, item) => acc + (item.qty * item.product.salePrice)*(1+item.product.tva/100), 0);
+    const total_htva = items.reduce((acc, item) => acc + item.qty * item.product.qteColis *item.product.salePrice, 0);
+    const total_ttc = items.reduce((acc, item) => acc + (item.qty * item.product.salePrice* item.product.qteColis)*(1+item.product.tva/100), 0);
 
     return (
         <Box sx={{

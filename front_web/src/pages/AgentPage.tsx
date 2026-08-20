@@ -34,9 +34,7 @@ function AgentPage({ user, onLogout }: AgentPageProps) {
   const [activeSection, setActiveSection] = useState<SectionKey | null>('dashboard');
   const [currentTask, setCurrentTask] = useState<string | null>(null);
 
-  const handleClientCreated = (_customer: Customer) => {
-    // sera utilisé pour rafraîchir la liste clients
-  };
+  const handleClientCreated = (_customer: Customer) => {};
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
